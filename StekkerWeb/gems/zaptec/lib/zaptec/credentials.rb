@@ -6,5 +6,9 @@ module Zaptec
       @access_token = access_token
       @expires_at = expires_at
     end
+
+    def expired?(at = Time.zone.now)
+      at >= expires_at
+    end
   end
 end
