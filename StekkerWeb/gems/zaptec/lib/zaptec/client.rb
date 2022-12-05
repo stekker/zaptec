@@ -39,6 +39,16 @@ module Zaptec
       )
     end
 
+    # https://api.zaptec.com/help/index.html#/Charger/get_api_chargers
+    def chargers
+      raise Errors::UnauthorizedError if credentials.expired?
+
+      get("/api/chargers")
+        .body
+        .fetch("Data")
+        .map { |data| Charger.parse(data) }
+    end
+
     # https://api.zaptec.com/help/index.html#/Installation/get_api_installation
     def installations
       raise Errors::UnauthorizedError if credentials.expired?
