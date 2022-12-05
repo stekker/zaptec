@@ -1,7 +1,12 @@
 RSpec.describe Zaptec::Client do
   describe "#authorize" do
     it "receives a token upon authorization" do
-      WebMock::API.stub_request(:post, "https://api.zaptec.com/oauth/token")
+      WebMock::API
+        .stub_request(:post, "https://api.zaptec.com/oauth/token")
+        .with(
+          body: { grant_type: "password", password: "12345", username: "stekker@example.com" },
+          headers: { "Content-Type": "application/x-www-form-urlencoded" }
+        )
         .to_return(
           body: {
             access_token: "abc",
@@ -22,16 +27,26 @@ RSpec.describe Zaptec::Client do
   end
 
   describe "#installations" do
-    it "gets the list of chargers for the account" do
-      WebMock::API.stub_request(:get, "https://api.zaptec.com/api/installation?Roles=3")
+    it "gets the list of installations for the account" do
+      WebMock::API
+        .stub_request(:get, "https://api.zaptec.com/api/installation?Roles=3")
         .to_return(body: installation_example.to_json)
 
-      client = described_class.new(credentials: Zaptec::Credentials.new("abc", 1.hour.from_now))
+      client = Zaptec::Client.new(credentials: Zaptec::Credentials.new("abc", 1.hour.from_now))
 
       chargers = client.installations
 
       expect(chargers).to eq "abc"
     end
+
+    it "raises an UnauthorizedError when the credentials have expired" do
+      credentials = Zaptec::Credentials.new("abc", 1.hour.ago)
+      client = Zaptec::Client.new(credentials: credentials)
+
+      expect { client.installations }
+        .to raise_error(Zaptec::Errors::UnauthorizedError)
+    end
+  end
   end
 
   private

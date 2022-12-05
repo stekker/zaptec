@@ -1,6 +1,8 @@
 module Zaptec
   class Client
-    ZAPTEC_API = "https://api.zaptec.com".freeze
+    BASE_URI = "https://api.zaptec.com".freeze
+    USER_ROLE = 1
+    OWNER_ROLE = 2
 
     attr_reader :http_client, :credentials
 
@@ -20,14 +22,14 @@ module Zaptec
       start = Time.zone.now
 
       response = http_client.post(
-        "#{ZAPTEC_API}/oauth/token",
+        "#{BASE_URI}/oauth/token",
         {
           username: username,
           password: password,
           grant_type: "password"
         }.to_query,
         {
-          "Content-Type" => "application/x-www-form-urlencoded"
+          "Content-Type": "application/x-www-form-urlencoded"
         }
       )
 
@@ -39,23 +41,23 @@ module Zaptec
 
     # https://api.zaptec.com/help/index.html#/Installation/get_api_installation
     def installations
-      raise Errors::UnauthorizedError unless credentials&.expired? == false
+      raise Errors::UnauthorizedError if credentials.expired?
 
-      user_role = 1
-      owner_role = 2
-
-      response = http_client.get(
-        "#{ZAPTEC_API}/api/installation",
-        {
-          Roles: user_role + owner_role
-        },
-        {
-          "accept" => "text/plain",
-          "Authorization" => "Bearer #{credentials.access_token}"
-        }
-      )
+      response = get("/api/installation")
 
       response.body
+    end
+
+    private
+
+    def get(endpoint)
+      raise Errors::UnauthorizedError if credentials.expired?
+
+      http_client.get(
+        "#{BASE_URI}#{endpoint}",
+        query,
+        { Authorization: "Bearer #{credentials.access_token}" }
+      )
     end
   end
 end
