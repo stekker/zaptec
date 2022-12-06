@@ -68,7 +68,24 @@ module Zaptec
         .then { |data| State.new(data) }
     end
 
+    def start_charging(charger) = send_command(charger, :StartCharging)
+
+    def pause_charging(charger) = send_command(charger, :StopCharging)
+
+    def finish_charging(charger) = send_command(charger, :StopChargingFinal)
+
     private
+
+    def send_command(charger, command)
+      command_id =
+        self
+          .class
+          .constants
+          .fetch("Commands")
+          .fetch(command.to_s) { raise "Unknown command '#{command}'" }
+
+      post("/api/chargers/#{charger.id}/sendCommand/#{command_id}")
+    end
 
     def get(endpoint, query = {})
       raise Errors::UnauthorizedError if credentials.expired?
@@ -76,6 +93,16 @@ module Zaptec
       http_client.get(
         "#{BASE_URI}#{endpoint}",
         query,
+        { Authorization: "Bearer #{credentials.access_token}" }
+      )
+    end
+
+    def post(endpoint, body = nil)
+      raise Errors::UnauthorizedError if credentials.expired?
+
+      http_client.post(
+        "#{BASE_URI}#{endpoint}",
+        body,
         { Authorization: "Bearer #{credentials.access_token}" }
       )
     end

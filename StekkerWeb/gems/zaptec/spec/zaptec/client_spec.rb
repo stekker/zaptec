@@ -107,6 +107,38 @@ RSpec.describe Zaptec::Client do
     end
   end
 
+  {
+    start_charging: 501,
+    pause_charging: 502,
+    finish_charging: 506
+  }.each do |operation, command_id|
+    describe "##{operation}" do
+      # rubocop:disable RSpec/NoExpectationExample
+      it "posts a #{operation} command" do
+        WebMock::API
+          .stub_request(:post, "https://api.zaptec.com/api/chargers/123/sendCommand/#{command_id}")
+          .to_return(status: 200)
+
+        credentials = Zaptec::Credentials.new("abc", 1.hour.from_now)
+        client = Zaptec::Client.new(credentials: credentials)
+
+        client.public_send(operation.to_sym, "123")
+      end
+      # rubocop:enable RSpec/NoExpectationExample
+
+      it "raises a RequestFailed error when the request fails" do
+        WebMock::API
+          .stub_request(:post, "https://api.zaptec.com/api/chargers/123/sendCommand/#{command_id}")
+          .to_return(status: 500)
+
+        credentials = Zaptec::Credentials.new("abc", 1.hour.from_now)
+        client = Zaptec::Client.new(credentials: credentials)
+
+        client.public_send(operation.to_sym, charger)
+      end
+    end
+  end
+
   private
 
   def chargers_example
