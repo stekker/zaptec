@@ -98,7 +98,12 @@ RSpec.describe Zaptec::Client do
           installation_id: "b30adfd3-3442-432e-88ea-8782b7e69b2f"
         )
 
-      pp client.state(charger)
+      expect(client.state(charger))
+        .to have_attributes(
+          total_charge_power: 0,
+          max_phases: 3,
+          total_charge_power_session: 0
+        )
     end
   end
 
