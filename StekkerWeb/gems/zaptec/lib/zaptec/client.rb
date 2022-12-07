@@ -6,6 +6,12 @@ module Zaptec
 
     attr_reader :http_client, :credentials
 
+    delegate :expired?,
+             :access_token,
+             :expires_at,
+             to: :credentials,
+             prefix: true
+
     def initialize(credentials: nil)
       @credentials = credentials
 
