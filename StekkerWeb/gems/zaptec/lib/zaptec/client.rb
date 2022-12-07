@@ -105,6 +105,8 @@ module Zaptec
         body,
         { Authorization: "Bearer #{credentials.access_token}" }
       )
+    rescue Faraday::Error => e
+      raise Errors::RequestFailed, "Request returned status #{e.response_status}"
     end
 
     class << self
