@@ -17,7 +17,7 @@ module Zaptec
     end
 
     def authorize(username:, password:)
-      raise Errors::ParameterMissingError if username.blank? || password.blank?
+      raise Errors::ParameterMissing if username.blank? || password.blank?
 
       start = Time.zone.now
 
@@ -41,7 +41,7 @@ module Zaptec
 
     # https://api.zaptec.com/help/index.html#/Charger/get_api_chargers
     def chargers
-      raise Errors::UnauthorizedError if credentials.expired?
+      raise Errors::Unauthorized if credentials.expired?
 
       get("/api/chargers", { Roles: USER_ROLE | OWNER_ROLE })
         .body
@@ -51,7 +51,7 @@ module Zaptec
 
     # https://api.zaptec.com/help/index.html#/Installation/get_api_installation
     def installations
-      raise Errors::UnauthorizedError if credentials.expired?
+      raise Errors::Unauthorized if credentials.expired?
 
       get("/api/installation", { Roles: USER_ROLE | OWNER_ROLE }).body
     end
@@ -88,7 +88,7 @@ module Zaptec
     end
 
     def get(endpoint, query = {})
-      raise Errors::UnauthorizedError if credentials.expired?
+      raise Errors::Unauthorized if credentials.expired?
 
       http_client.get(
         "#{BASE_URI}#{endpoint}",
@@ -98,7 +98,7 @@ module Zaptec
     end
 
     def post(endpoint, body = nil)
-      raise Errors::UnauthorizedError if credentials.expired?
+      raise Errors::Unauthorized if credentials.expired?
 
       http_client.post(
         "#{BASE_URI}#{endpoint}",

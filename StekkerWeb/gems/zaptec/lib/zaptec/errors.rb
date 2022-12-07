@@ -1,7 +1,7 @@
 module Zaptec
   module Errors
-    class BaseError < StandardError; end
-    class ParameterMissingError < BaseError; end
-    class UnauthorizedError < BaseError; end
+    class Base < StandardError; end
+    class ParameterMissing < Base; end
+    class Unauthorized < Base; end
   end
 end

@@ -39,12 +39,12 @@ RSpec.describe Zaptec::Client do
       expect(chargers).to eq "abc"
     end
 
-    it "raises an UnauthorizedError when the credentials have expired" do
+    it "raises an Unauthorized when the credentials have expired" do
       credentials = Zaptec::Credentials.new("abc", 1.hour.ago)
       client = Zaptec::Client.new(credentials: credentials)
 
       expect { client.installations }
-        .to raise_error(Zaptec::Errors::UnauthorizedError)
+        .to raise_error(Zaptec::Errors::Unauthorized)
     end
   end
 
@@ -70,12 +70,12 @@ RSpec.describe Zaptec::Client do
             )
     end
 
-    it "raises an UnauthorizedError when the credentials have expired" do
+    it "raises an Unauthorized when the credentials have expired" do
       credentials = Zaptec::Credentials.new("abc", 1.hour.ago)
       client = Zaptec::Client.new(credentials: credentials)
 
       expect { client.chargers }
-        .to raise_error(Zaptec::Errors::UnauthorizedError)
+        .to raise_error(Zaptec::Errors::Unauthorized)
     end
   end
 
