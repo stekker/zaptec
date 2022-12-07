@@ -56,27 +56,27 @@ module Zaptec
       get("/api/installation", { Roles: USER_ROLE | OWNER_ROLE }).body
     end
 
-    def state(charger)
-      get("/api/chargers/#{charger.id}/state")
+    def state(charger_id, device_type)
+      get("/api/chargers/#{charger_id}/state")
         .body
         .to_h do |state|
           [
-            self.class.device_type_observation_ids(charger.device_type).fetch(state.fetch("StateId")),
+            self.class.device_type_observation_ids(device_type).fetch(state.fetch("StateId")),
             state.fetch("ValueAsString", nil)
           ]
         end
         .then { |data| State.new(data) }
     end
 
-    def start_charging(charger) = send_command(charger, :StartCharging)
+    def start_charging(charger_id) = send_command(charger_id, :StartCharging)
 
-    def pause_charging(charger) = send_command(charger, :StopCharging)
+    def pause_charging(charger_id) = send_command(charger_id, :StopCharging)
 
-    def finish_charging(charger) = send_command(charger, :StopChargingFinal)
+    def finish_charging(charger_id) = send_command(charger_id, :StopChargingFinal)
 
     private
 
-    def send_command(charger, command)
+    def send_command(charger_id, command)
       command_id =
         self
           .class
@@ -84,7 +84,7 @@ module Zaptec
           .fetch("Commands")
           .fetch(command.to_s) { raise "Unknown command '#{command}'" }
 
-      post("/api/chargers/#{charger.id}/sendCommand/#{command_id}")
+      post("/api/chargers/#{charger_id}/sendCommand/#{command_id}")
     end
 
     def get(endpoint, query = {})

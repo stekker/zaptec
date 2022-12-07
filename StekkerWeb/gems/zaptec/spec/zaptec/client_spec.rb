@@ -17,7 +17,7 @@ RSpec.describe Zaptec::Client do
 
       Timecop.freeze
 
-      client = described_class.new
+      client = Zaptec::Client.new
 
       credentials = client.authorize(username: "stekker@example.com", password: "12345")
 
@@ -87,18 +87,9 @@ RSpec.describe Zaptec::Client do
 
       credentials = Zaptec::Credentials.new("abc", 1.hour.from_now)
       client = Zaptec::Client.new(credentials: credentials)
+      device_type_apollo = 4
 
-      charger =
-        Zaptec::Charger.new(
-          id: "123",
-          name: "Zaptec",
-          device_id: "ZAP049387",
-          device_type: 4,
-          installation_name: "Antonio Morohof 1",
-          installation_id: "b30adfd3-3442-432e-88ea-8782b7e69b2f"
-        )
-
-      expect(client.state(charger))
+      expect(client.state("123", device_type_apollo))
         .to have_attributes(
           total_charge_power: 0,
           max_phases: 3,
@@ -134,7 +125,8 @@ RSpec.describe Zaptec::Client do
         credentials = Zaptec::Credentials.new("abc", 1.hour.from_now)
         client = Zaptec::Client.new(credentials: credentials)
 
-        client.public_send(operation.to_sym, charger)
+        expect { client.public_send(operation.to_sym, "123") }
+          .to raise_error(Zaptec::Errors::RequestFailed, "Request returned status 500")
       end
     end
   end
@@ -1155,5 +1147,16 @@ RSpec.describe Zaptec::Client do
         }
       ]
     }
+  end
+
+  def build_zaptec_charger
+    Zaptec::Charger.new(
+      id: "123",
+      name: "Zaptec",
+      device_id: "ZAP049387",
+      device_type: 4,
+      installation_name: "Antonio Morohof 1",
+      installation_id: "b30adfd3-3442-432e-88ea-8782b7e69b2f"
+    )
   end
 end
