@@ -22,6 +22,7 @@ module Zaptec
       end
     end
 
+    # https://zaptec.com/downloads/ZapChargerPro_Integration.pdf
     def authorize(username:, password:)
       raise Errors::ParameterMissing if username.blank? || password.blank?
 
@@ -55,13 +56,7 @@ module Zaptec
         .map { |data| Charger.parse(data) }
     end
 
-    # https://api.zaptec.com/help/index.html#/Installation/get_api_installation
-    def installations
-      raise Errors::Unauthorized if credentials.expired?
-
-      get("/api/installation", { Roles: USER_ROLE | OWNER_ROLE }).body
-    end
-
+    # https://api.zaptec.com/help/index.html#/Charger/get_api_chargers__id__state
     def state(charger_id, device_type)
       get("/api/chargers/#{charger_id}/state")
         .body
@@ -82,6 +77,7 @@ module Zaptec
 
     private
 
+    # https://api.zaptec.com/help/index.html#/Charger/post_api_chargers__id__sendCommand__commandId_
     def send_command(charger_id, command)
       command_id =
         self
