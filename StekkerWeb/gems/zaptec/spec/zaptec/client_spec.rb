@@ -26,28 +26,6 @@ RSpec.describe Zaptec::Client do
     end
   end
 
-  describe "#installations" do
-    it "gets the list of installations for the account" do
-      WebMock::API
-        .stub_request(:get, "https://api.zaptec.com/api/installation?Roles=3")
-        .to_return(body: installation_example.to_json)
-
-      client = Zaptec::Client.new(credentials: Zaptec::Credentials.new("abc", 1.hour.from_now))
-
-      chargers = client.installations
-
-      expect(chargers).to eq "abc"
-    end
-
-    it "raises an Unauthorized when the credentials have expired" do
-      credentials = Zaptec::Credentials.new("abc", 1.hour.ago)
-      client = Zaptec::Client.new(credentials: credentials)
-
-      expect { client.installations }
-        .to raise_error(Zaptec::Errors::Unauthorized)
-    end
-  end
-
   describe "#chargers" do
     it "gets the list of chargers" do
       WebMock::API
