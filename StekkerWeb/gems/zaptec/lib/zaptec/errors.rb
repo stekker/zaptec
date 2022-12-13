@@ -4,5 +4,6 @@ module Zaptec
     class ParameterMissing < Base; end
     class Unauthorized < Base; end
     class RequestFailed < Base; end
+    class AuthorizationFailed < Base; end
   end
 end

@@ -8,7 +8,7 @@ module Zaptec
     end
 
     def expired?(at = Time.zone.now)
-      at >= expires_at
+      expires_at.nil? || at >= expires_at
     end
   end
 end

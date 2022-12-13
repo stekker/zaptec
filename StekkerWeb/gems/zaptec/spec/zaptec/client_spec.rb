@@ -24,6 +24,21 @@ RSpec.describe Zaptec::Client do
       expect(credentials.access_token).to eq "abc"
       expect(credentials.expires_at).to eq Time.zone.now + 86_399
     end
+
+    it "raises an AuthorizationFailed error on a 400 response" do
+      WebMock::API
+        .stub_request(:post, "https://api.zaptec.com/oauth/token")
+        .with(
+          body: { grant_type: "password", password: "12345", username: "stekker@example.com" },
+          headers: { "Content-Type": "application/x-www-form-urlencoded" }
+        )
+        .to_return(status: 400)
+
+      client = Zaptec::Client.new
+
+      expect { client.authorize(username: "stekker@example.com", password: "12345") }
+        .to raise_error(Zaptec::Errors::AuthorizationFailed)
+    end
   end
 
   describe "#chargers" do

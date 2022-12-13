@@ -44,6 +44,8 @@ module Zaptec
         response.body["access_token"],
         start + response.body["expires_in"].to_f
       )
+    rescue Faraday::BadRequestError
+      raise Errors::AuthorizationFailed
     end
 
     # https://api.zaptec.com/help/index.html#/Charger/get_api_chargers
