@@ -1,5 +1,7 @@
 module Zaptec
   class State
+    CHARGING_MODES = %w[Connected_Requesting Connected_Charging].freeze
+
     def initialize(data)
       @data = data
     end
@@ -9,5 +11,15 @@ module Zaptec
     def max_phases = @data.fetch(:MaxPhases).to_i
 
     def total_charge_power_session = @data.fetch(:TotalChargePowerSession).to_f
+
+    def charging? = charger_operation_mode.in?(CHARGING_MODES)
+
+    def online? = @data.fetch(:IsOnline).to_i.positive?
+
+    private
+
+    def charger_operation_mode
+      Constants.charger_operation_mode_to_name(@data.fetch(:ChargerOperationMode).to_i)
+    end
   end
 end

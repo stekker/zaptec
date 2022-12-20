@@ -86,7 +86,9 @@ RSpec.describe Zaptec::Client do
         .to have_attributes(
           total_charge_power: 0,
           max_phases: 3,
-          total_charge_power_session: 0
+          total_charge_power_session: 0,
+          charging?: false,
+          online?: true
         )
     end
   end

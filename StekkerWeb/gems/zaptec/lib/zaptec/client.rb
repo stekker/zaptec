@@ -64,7 +64,7 @@ module Zaptec
         .body
         .to_h do |state|
           [
-            self.class.device_type_observation_ids(device_type).fetch(state.fetch("StateId")),
+            Constants.observation_state_id_to_name(state_id: state.fetch("StateId"), device_type: device_type),
             state.fetch("ValueAsString", nil)
           ]
         end
@@ -81,12 +81,7 @@ module Zaptec
 
     # https://api.zaptec.com/help/index.html#/Charger/post_api_chargers__id__sendCommand__commandId_
     def send_command(charger_id, command)
-      command_id =
-        self
-          .class
-          .constants
-          .fetch("Commands")
-          .fetch(command.to_s) { raise "Unknown command '#{command}'" }
+      command_id = Constants.command_to_command_id(command)
 
       post("/api/chargers/#{charger_id}/sendCommand/#{command_id}")
     end
@@ -111,40 +106,6 @@ module Zaptec
       )
     rescue Faraday::Error => e
       raise Errors::RequestFailed, "Request returned status #{e.response_status}"
-    end
-
-    class << self
-      def device_type_observation_ids(device_type)
-        @device_type_observation_ids ||= {}
-
-        @device_type_observation_ids[device_type] ||=
-          begin
-            global_observation_ids = constants.fetch("Observations").invert.transform_values(&:to_sym)
-
-            device_specific_observations =
-              constants
-                .fetch("Schema")
-                .fetch(device_type_to_name(device_type))
-                .fetch("ObservationIds")
-                .invert
-                .transform_values(&:to_sym)
-
-            global_observation_ids.merge(device_specific_observations)
-          end
-      end
-
-      def device_type_to_name(device_type)
-        constants
-          .fetch("DeviceTypes")
-          .detect { |_name, type| type == device_type }
-          .then { |name, _type| name }
-      end
-
-      def constants_file = Pathname.new(__dir__).join("../../data/constants.json")
-
-      def constants
-        @constants ||= JSON.parse(constants_file.read)
-      end
     end
   end
 end
