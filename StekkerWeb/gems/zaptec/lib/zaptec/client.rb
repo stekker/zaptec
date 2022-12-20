@@ -50,8 +50,6 @@ module Zaptec
 
     # https://api.zaptec.com/help/index.html#/Charger/get_api_chargers
     def chargers
-      raise Errors::Unauthorized if credentials.expired?
-
       get("/api/chargers", { Roles: USER_ROLE | OWNER_ROLE })
         .body
         .fetch("Data")
@@ -87,7 +85,7 @@ module Zaptec
     end
 
     def get(endpoint, query = {})
-      raise Errors::Unauthorized if credentials.expired?
+      require_valid_credentials!
 
       http_client.get(
         "#{BASE_URI}#{endpoint}",
@@ -97,7 +95,7 @@ module Zaptec
     end
 
     def post(endpoint, body = nil)
-      raise Errors::Unauthorized if credentials.expired?
+      require_valid_credentials!
 
       http_client.post(
         "#{BASE_URI}#{endpoint}",
@@ -106,6 +104,10 @@ module Zaptec
       )
     rescue Faraday::Error => e
       raise Errors::RequestFailed, "Request returned status #{e.response_status}"
+    end
+
+    def require_valid_credentials!
+      raise Errors::Unauthorized if credentials.blank? || credentials.expired?
     end
   end
 end
