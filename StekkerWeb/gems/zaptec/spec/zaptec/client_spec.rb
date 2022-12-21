@@ -91,6 +91,23 @@ RSpec.describe Zaptec::Client do
           online?: true
         )
     end
+
+    it "includes a meter reading" do
+      WebMock::API
+        .stub_request(:get, "https://api.zaptec.com/api/chargers/123/state")
+        .to_return(body: charger_state_example.to_json)
+
+      credentials = Zaptec::Credentials.new("abc", 1.hour.from_now)
+      client = Zaptec::Client.new(credentials: credentials)
+      device_type_apollo = 4
+      state = client.state("123", device_type_apollo)
+
+      expect(state.meter_reading)
+        .to have_attributes(
+          reading_kwh: 24.368,
+          timestamp: Time.utc(2022, 9, 28, 14, 0, 0)
+        )
+    end
   end
 
   {

@@ -16,6 +16,10 @@ module Zaptec
 
     def online? = @data.fetch(:IsOnline).to_i.positive?
 
+    def meter_reading
+      @meter_reading ||= MeterReading.parse(@data.fetch(:SignedMeterValue))
+    end
+
     private
 
     def charger_operation_mode
