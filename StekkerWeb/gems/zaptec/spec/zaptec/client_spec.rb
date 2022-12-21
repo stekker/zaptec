@@ -88,7 +88,8 @@ RSpec.describe Zaptec::Client do
           max_phases: 3,
           total_charge_power_session: 0,
           charging?: false,
-          online?: true
+          online?: true,
+          disconnected?: true
         )
     end
 

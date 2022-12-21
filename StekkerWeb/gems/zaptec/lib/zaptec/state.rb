@@ -1,6 +1,7 @@
 module Zaptec
   class State
     CHARGING_MODES = %w[Connected_Requesting Connected_Charging].freeze
+    DISCONNECTED = "Disconnected".freeze
 
     def initialize(data)
       @data = data
@@ -13,6 +14,8 @@ module Zaptec
     def total_charge_power_session = @data.fetch(:TotalChargePowerSession).to_f
 
     def charging? = charger_operation_mode.in?(CHARGING_MODES)
+
+    def disconnected? = charger_operation_mode == DISCONNECTED
 
     def online? = @data.fetch(:IsOnline).to_i.positive?
 
