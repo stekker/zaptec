@@ -112,9 +112,8 @@ RSpec.describe Zaptec::Client do
   end
 
   {
-    start_charging: 501,
-    pause_charging: 502,
-    finish_charging: 506
+    pause_charging: 506,
+    resume_charging: 507
   }.each do |operation, command_id|
     describe "##{operation}" do
       # rubocop:disable RSpec/NoExpectationExample

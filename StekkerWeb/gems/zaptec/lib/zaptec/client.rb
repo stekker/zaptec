@@ -69,11 +69,9 @@ module Zaptec
         .then { |data| State.new(data) }
     end
 
-    def start_charging(charger_id) = send_command(charger_id, :StartCharging)
+    def pause_charging(charger_id) = send_command(charger_id, :StopChargingFinal)
 
-    def pause_charging(charger_id) = send_command(charger_id, :StopCharging)
-
-    def finish_charging(charger_id) = send_command(charger_id, :StopChargingFinal)
+    def resume_charging(charger_id) = send_command(charger_id, :ResumeCharging)
 
     private
 
