@@ -20,7 +20,7 @@ module Zaptec
     def online? = @data.fetch(:IsOnline).to_i.positive?
 
     def meter_reading
-      @meter_reading ||= MeterReading.parse(@data.fetch(:SignedMeterValue))
+      @meter_reading ||= MeterReading.new(reading_kwh: total_charge_power_session, timestamp: Time.zone.now)
     end
 
     private

@@ -84,9 +84,9 @@ RSpec.describe Zaptec::Client do
 
       expect(client.state("123", device_type_apollo))
         .to have_attributes(
-          total_charge_power: 0,
+          total_charge_power: 1.42012,
           max_phases: 3,
-          total_charge_power_session: 0,
+          total_charge_power_session: 1.42012,
           charging?: false,
           online?: true,
           disconnected?: true
@@ -94,6 +94,8 @@ RSpec.describe Zaptec::Client do
     end
 
     it "includes a meter reading" do
+      Timecop.freeze
+
       WebMock::API
         .stub_request(:get, "https://api.zaptec.com/api/chargers/123/state")
         .to_return(body: charger_state_example.to_json)
@@ -105,8 +107,8 @@ RSpec.describe Zaptec::Client do
 
       expect(state.meter_reading)
         .to have_attributes(
-          reading_kwh: 24.368,
-          timestamp: Time.utc(2022, 9, 28, 14, 0, 0)
+          reading_kwh: 1.42012,
+          timestamp: Time.zone.now
         )
     end
   end
@@ -327,7 +329,7 @@ RSpec.describe Zaptec::Client do
         ChargerId: "de522271-91f5-45b8-916b-07e258ff07d2",
         StateId: 513,
         Timestamp: "2022-09-28T13:42:37.577",
-        ValueAsString: "0.000"
+        ValueAsString: "1.42012"
       },
       {
         ChargerId: "de522271-91f5-45b8-916b-07e258ff07d2",
@@ -387,7 +389,7 @@ RSpec.describe Zaptec::Client do
         ChargerId: "de522271-91f5-45b8-916b-07e258ff07d2",
         StateId: 553,
         Timestamp: "2022-10-07T18:53:10.193",
-        ValueAsString: "0.000"
+        ValueAsString: "1.42012"
       },
       {
         ChargerId: "de522271-91f5-45b8-916b-07e258ff07d2",
