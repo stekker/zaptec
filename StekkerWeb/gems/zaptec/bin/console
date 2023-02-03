@@ -10,4 +10,7 @@ require "zaptec"
 # Pry.start
 
 require "irb"
+
+Time.zone_default = Time.find_zone!("UTC")
+
 IRB.start(__FILE__)
