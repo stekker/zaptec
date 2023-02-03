@@ -1,14 +1,13 @@
 PATH
   remote: .
   specs:
-    zaptec (0.1.0)
+    zaptec (1.0.0)
       activemodel
       activesupport
       faraday
       faraday-cookie_jar
       faraday-detailed_logger
       faraday_middleware
-      zeitwerk
 
 GEM
   remote: https://rubygems.org/
@@ -124,13 +123,13 @@ GEM
       addressable (>= 2.8.0)
       crack (>= 0.3.2)
       hashdiff (>= 0.4.0, < 2.0.0)
-    zeitwerk (2.6.6)
 
 PLATFORMS
   arm64-darwin-20
   arm64-darwin-21
   arm64-darwin-22
   x86_64-darwin-21
+  x86_64-linux
 
 DEPENDENCIES
   jwt (~> 2.6)
