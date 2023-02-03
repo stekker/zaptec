@@ -5,7 +5,7 @@ Gem::Specification.new do |spec|
   spec.name          = "zaptec"
   spec.version       = Zaptec::VERSION
   spec.authors       = ["Team Stekker"]
-  spec.email         = ["support@stekker.app"]
+  spec.email         = ["support@stekker.com"]
 
   spec.summary       = "Connect to your Zaptec charger"
   spec.description   = "Zaptec"
@@ -31,7 +31,6 @@ Gem::Specification.new do |spec|
   spec.add_runtime_dependency "faraday-cookie_jar"
   spec.add_runtime_dependency "faraday-detailed_logger"
   spec.add_runtime_dependency "faraday_middleware"
-  spec.add_runtime_dependency "zeitwerk"
 
   spec.metadata["rubygems_mfa_required"] = "true"
 end
