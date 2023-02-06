@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    zaptec (1.0.0)
+    stekker_zaptec (1.0.0)
       activemodel
       activesupport
       faraday
@@ -138,9 +138,9 @@ DEPENDENCIES
   rubocop (~> 1.7)
   rubocop-rails (~> 2.17)
   rubocop-rspec (~> 2.10)
+  stekker_zaptec!
   timecop (~> 0.9)
   webmock (~> 3.18)
-  zaptec!
 
 BUNDLED WITH
    2.2.22

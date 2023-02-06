@@ -2,19 +2,19 @@ require_relative "lib/zaptec/version"
 ruby_version = File.read(".ruby-version").strip
 
 Gem::Specification.new do |spec|
-  spec.name          = "zaptec"
+  spec.name          = "stekker_zaptec"
   spec.version       = Zaptec::VERSION
   spec.authors       = ["Team Stekker"]
   spec.email         = ["support@stekker.com"]
 
   spec.summary       = "Connect to your Zaptec charger"
-  spec.description   = "Zaptec"
+  spec.description   = "Zaptec connector"
   spec.homepage      = "https://stekker.com"
   spec.required_ruby_version = Gem::Requirement.new(">= #{ruby_version}")
 
   spec.metadata["homepage_uri"] = spec.homepage
-  spec.metadata["source_code_uri"] = "https://github.com/stekker/stekker"
-  spec.metadata["changelog_uri"] = "https://github.com/stekker/stekker"
+  spec.metadata["source_code_uri"] = "https://github.com/stekker/zaptec"
+  spec.metadata["changelog_uri"] = "https://github.com/stekker/zaptec"
 
   # Specify which files should be added to the gem when it is released.
   # The `git ls-files -z` loads the files in the RubyGem that have been added into git.
