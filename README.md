@@ -24,10 +24,10 @@ goals.
 
 Add this line to your application's Gemfile:
 
+```ruby
 gem "stekker_zaptec"
 ```
 
-```ruby
 And then execute:
 
     $ bundle install
@@ -48,7 +48,7 @@ $ bin/console
 require "zaptec"
 
 client = Zaptec::Client.new
-client.login("username@example.com", "password")
+client.authorize(username: "username@example.com", password: "password")
 # #<Zaptec::Credentials:0x000000011c35d708
 
 # Get a list of chargers
