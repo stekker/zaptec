@@ -24,7 +24,7 @@ goals.
 
 Add this line to your application's Gemfile:
 
-gem "zaptec"
+gem "stekker_zaptec"
 ```
 
 ```ruby
@@ -34,7 +34,7 @@ And then execute:
 
 Or install it yourself as:
 
-    $ gem install zaptec
+    $ gem install stekker_zaptec
 
 ## Usage
 
