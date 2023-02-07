@@ -45,7 +45,7 @@ $ bin/console
 ```
 
 ```ruby
-require "zaptec"
+require "stekker_zaptec"
 
 client = Zaptec::Client.new
 client.authorize(username: "username@example.com", password: "password")

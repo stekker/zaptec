@@ -1,4 +1,4 @@
-require "zaptec"
+require "stekker_zaptec"
 require "webmock"
 require "webmock/rspec"
 require "timecop"
