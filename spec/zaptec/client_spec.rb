@@ -113,6 +113,27 @@ RSpec.describe Zaptec::Client do
     end
   end
 
+  it "does not raise an error for unknown states" do
+    WebMock::API
+      .stub_request(:get, "https://api.zaptec.com/api/chargers/123/state")
+      .to_return(
+        body: [
+          {
+            ChargerId: "de522271-91f5-45b8-916b-07e258ff07d2",
+            StateId: 99999,
+            Timestamp: "2022-12-05T13:10:10.837",
+            ValueAsString: "1"
+          }
+        ].to_json
+      )
+
+    credentials = Zaptec::Credentials.new("abc", 1.hour.from_now)
+    client = Zaptec::Client.new(credentials: credentials)
+    device_type_apollo = 4
+
+    expect { client.state("123", device_type_apollo) }.not_to raise_error
+  end
+
   {
     pause_charging: 506,
     resume_charging: 507
