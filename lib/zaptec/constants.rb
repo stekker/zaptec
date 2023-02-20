@@ -4,6 +4,8 @@ module Zaptec
       def observation_state_id_to_name(state_id:, device_type:)
         device_type_observation_ids(device_type)
           .fetch(state_id)
+      rescue KeyError
+        "Unknown state id '#{state_id}' (device type '#{device_type}')"
       end
 
       def charger_operation_mode_to_name(operation_mode)
