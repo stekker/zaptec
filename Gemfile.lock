@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    stekker_zaptec (1.1.0)
+    stekker_zaptec (1.1.1)
       activemodel
       activesupport
       faraday
