@@ -84,7 +84,7 @@ RSpec.describe Zaptec::Client do
 
       expect(client.state("123", device_type_apollo))
         .to have_attributes(
-          total_charge_power: 1.42012,
+          total_charge_power: 2.83012,
           max_phases: 3,
           total_charge_power_session: 1.42012,
           charging?: false,
@@ -107,7 +107,7 @@ RSpec.describe Zaptec::Client do
 
       expect(state.meter_reading)
         .to have_attributes(
-          reading_kwh: 1.42012,
+          reading_kwh: 2.83012,
           timestamp: Time.zone.now
         )
     end
@@ -350,7 +350,7 @@ RSpec.describe Zaptec::Client do
         ChargerId: "de522271-91f5-45b8-916b-07e258ff07d2",
         StateId: 513,
         Timestamp: "2022-09-28T13:42:37.577",
-        ValueAsString: "1.42012"
+        ValueAsString: "2.83012"
       },
       {
         ChargerId: "de522271-91f5-45b8-916b-07e258ff07d2",
