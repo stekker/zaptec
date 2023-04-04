@@ -1,38 +1,14 @@
 module Zaptec
   class Charger
-    attr_reader :id,
-                :name,
-                :device_id,
-                :device_type,
-                :installation_name,
-                :installation_id
-
-    def initialize(
-      id:,
-      name:,
-      device_id:,
-      device_type:,
-      installation_name:,
-      installation_id:
-    )
-
-      @id = id
-      @name = name
-      @device_id = device_id
-      @device_type = device_type
-      @installation_name = installation_name
-      @installation_id = installation_id
+    def initialize(data)
+      @data = data.symbolize_keys
     end
 
-    def self.parse(data)
-      new(
-        id: data.fetch("Id"),
-        name: data.fetch("Name"),
-        device_id: data.fetch("DeviceId"),
-        device_type: data.fetch("DeviceType"),
-        installation_name: data.fetch("InstallationName"),
-        installation_id: data.fetch("InstallationId")
-      )
-    end
+    def id = @data.fetch(:Id)
+    def name = @data.fetch(:Name)
+    def device_id = @data.fetch(:DeviceId)
+    def device_type = @data.fetch(:DeviceType)
+    def installation_name = @data.fetch(:InstallationName)
+    def installation_id = @data.fetch(:InstallationId)
   end
 end

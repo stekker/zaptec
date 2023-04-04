@@ -4,7 +4,7 @@ module Zaptec
     USER_ROLE = 1
     OWNER_ROLE = 2
 
-    attr_reader :http_client, :credentials
+    attr_reader :credentials
 
     delegate :expired?,
              :access_token,
@@ -12,14 +12,22 @@ module Zaptec
              to: :credentials,
              prefix: true
 
-    def initialize(credentials: nil)
-      @credentials = credentials
+    def initialize(
+      username:,
+      password:,
+      token_cache: ActiveSupport::Cache::MemoryStore.new,
+      encryptor: NullEncryptor.new
+    )
+      @username = username
+      @password = password
+      @token_cache = token_cache
+      @encryptor = encryptor
+    end
 
-      @http_client = Faraday.new(url: BASE_URI) do |conn|
-        conn.request :json
-        conn.response :json
-        conn.response :raise_error
-      end
+    # https://zendesk.zaptec.com/hc/en-001/articles/6062673456657-Access-to-Installations-Authentication-for-Third-Parties#lookup-key-0-0
+    def grant_access_url(lookup_key:, partner_name:, redirect_url: nil, language: "en")
+      query = URI.encode_www_form(partnerName: partner_name, returnUrl: redirect_url, lang: language)
+      "https://portal.zaptec.com/#!/access/request/#{lookup_key}?#{query}"
     end
 
     # https://zaptec.com/downloads/ZapChargerPro_Integration.pdf
@@ -28,7 +36,7 @@ module Zaptec
 
       start = Time.zone.now
 
-      response = http_client.post(
+      response = connection.post(
         "#{BASE_URI}/oauth/token",
         {
           username: username,
@@ -53,7 +61,12 @@ module Zaptec
       get("/api/chargers", { Roles: USER_ROLE | OWNER_ROLE })
         .body
         .fetch("Data")
-        .map { |data| Charger.parse(data) }
+        .map { |data| Charger.new(data) }
+    end
+
+    def get_installation_hierarchy(installation_id)
+      get("/api/installation/#{installation_id}/hierarchy")
+        .then { |response| Installation.new(response.body) }
     end
 
     # https://api.zaptec.com/help/index.html#/Charger/get_api_chargers__id__state
@@ -75,6 +88,22 @@ module Zaptec
 
     private
 
+    attr_reader :username, :password
+
+    def connection
+      Faraday.new(url: BASE_URL) do |conn|
+        conn.request :json
+        conn.response :raise_error
+      end
+    end
+
+    def authenticated_connection
+      connection.tap do |conn|
+        conn.request :authorization, "Bearer", access_token
+        conn.response :json, content_type: /\bjson$/
+      end
+    end
+
     # https://api.zaptec.com/help/index.html#/Charger/post_api_chargers__id__sendCommand__commandId_
     def send_command(charger_id, command)
       command_id = Constants.command_to_command_id(command)
@@ -83,25 +112,59 @@ module Zaptec
     end
 
     def get(endpoint, query = {})
-      require_valid_credentials!
-
-      http_client.get(
-        "#{BASE_URI}#{endpoint}",
-        query,
-        { Authorization: "Bearer #{credentials.access_token}" }
-      )
+      with_error_handling do
+        authenticated_connection.get("#{BASE_URL}#{endpoint}", query)
+      end
     end
 
-    def post(endpoint, body = nil)
-      require_valid_credentials!
+    def post(endpoint, body: nil, query: nil)
+      with_error_handling do
+        authenticated_connection.post("#{BASE_URL}#{endpoint}", body) do |req|
+          req.params = query unless query.nil?
+        end
+      end
+    end
 
-      http_client.post(
-        "#{BASE_URI}#{endpoint}",
-        body,
-        { Authorization: "Bearer #{credentials.access_token}" }
-      )
+    def with_error_handling
+      token_refreshed ||= false
+
+      yield
+    rescue Faraday::UnauthorizedError => e
+      if token_refreshed
+        raise Errors::RequestFailed.new("Request returned status #{e.response_status}", e.response)
+      else
+        refresh_access_token!
+        token_refreshed = true
+
+        retry
+      end
     rescue Faraday::Error => e
-      raise Errors::RequestFailed, "Request returned status #{e.response_status}"
+      raise Errors::RequestFailed.new("Request returned status #{e.response_status}", e.response)
+    end
+
+    def access_token
+      encrypted_tokens = @token_cache.fetch(TOKENS_CACHE_KEY) do
+        @encryptor.encrypt(request_access_token, cipher_options: { deterministic: true })
+      end
+
+      plain_text_tokens = @encryptor.decrypt(encrypted_tokens)
+
+      JSON.parse(plain_text_tokens).fetch("accessToken")
+    end
+
+    def refresh_access_token!
+      @token_cache.write(
+        TOKENS_CACHE_KEY,
+        @encryptor.encrypt(request_access_token, cipher_options: { deterministic: true }),
+        expires_in: 1.day,
+        )
+    rescue Faraday::Error => e
+      raise Errors::RequestFailed.new("Request returned status #{e.response_status}", e.response)
+    end
+
+    # https://developer.easee.cloud/reference/post_api-accounts-login
+    def request_access_token
+      authorize(username:, password:)
     end
 
     def require_valid_credentials!

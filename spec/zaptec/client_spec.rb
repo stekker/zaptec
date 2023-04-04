@@ -166,6 +166,56 @@ RSpec.describe Zaptec::Client do
     end
   end
 
+  describe "#get_installation_hierarchy" do
+    it "fetches the hierarchy for an installation" do
+      WebMock::API
+        .stub_request(:get, "https://api.zaptec.com/api/installation/I123/hierarchy")
+        .to_return(
+          body: <<~JSON
+            {
+              "Id": "b30adfd3-3442-432e-88ea-8782b7e69b2f",
+              "Name": "Stekker test",
+              "InstallationName": "Stekker test",
+              "NetworkType": 4,
+              "Circuits": [
+                {
+                  "Id": "8043ea1d-31ce-4a20-a953-2ea5721f9d44",
+                  "Name": "Charge circuit",
+                  "MaxCurrent": 10,
+                  "IsActive": true,
+                  "Active": true,
+                  "InstallationId": "b30adfd3-3442-432e-88ea-8782b7e69b2f",
+                  "InstallationName": "Stekker test",
+                  "Chargers": [
+                    {
+                      "Id": "de522271-91f5-45b8-916b-07e258ff07d2",
+                      "DeviceId": "ZAP049387",
+                      "MID": "ZAP049387",
+                      "Name": "Zaptec",
+                      "SerialNo": "Zaptec",
+                      "Active": true,
+                      "DeviceType": 4
+                    }
+                  ]
+                }
+              ]
+            }
+          JSON
+        )
+
+      credentials = Zaptec::Credentials.new("abc", 1.hour.from_now)
+      client = Zaptec::Client.new(credentials: credentials)
+
+      installation_hierarchy = client.get_installation_hierarchy("I123")
+      circuit = installation_hierarchy.circuits.first
+      charger = circuit.chargers.first
+
+      expect(installation_hierarchy.id).to eq "b30adfd3-3442-432e-88ea-8782b7e69b2f"
+      expect(circuit.id).to eq "8043ea1d-31ce-4a20-a953-2ea5721f9d44"
+      expect(charger).to have_attributes(id: "de522271-91f5-45b8-916b-07e258ff07d2", name: "Zaptec")
+    end
+  end
+
   private
 
   def chargers_example
