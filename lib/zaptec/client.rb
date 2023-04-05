@@ -1,8 +1,9 @@
 module Zaptec
   class Client
-    BASE_URI = "https://api.zaptec.com".freeze
+    BASE_URL = "https://api.zaptec.com".freeze
     USER_ROLE = 1
     OWNER_ROLE = 2
+    TOKENS_CACHE_KEY = "zaptec.auth.tokens".freeze
 
     attr_reader :credentials
 
@@ -34,13 +35,13 @@ module Zaptec
     def authorize(username:, password:)
       raise Errors::ParameterMissing if username.blank? || password.blank?
 
-      start = Time.zone.now
+      start = Time.current
 
       response = connection.post(
-        "#{BASE_URI}/oauth/token",
+        "#{BASE_URL}/oauth/token",
         {
-          username: username,
-          password: password,
+          username:,
+          password:,
           grant_type: "password"
         }.to_query,
         {
@@ -75,7 +76,7 @@ module Zaptec
         .body
         .to_h do |state|
           [
-            Constants.observation_state_id_to_name(state_id: state.fetch("StateId"), device_type: device_type),
+            Constants.observation_state_id_to_name(state_id: state.fetch("StateId"), device_type:),
             state.fetch("ValueAsString", nil)
           ]
         end
@@ -93,6 +94,7 @@ module Zaptec
     def connection
       Faraday.new(url: BASE_URL) do |conn|
         conn.request :json
+        conn.response :json
         conn.response :raise_error
       end
     end
@@ -100,7 +102,6 @@ module Zaptec
     def authenticated_connection
       connection.tap do |conn|
         conn.request :authorization, "Bearer", access_token
-        conn.response :json, content_type: /\bjson$/
       end
     end
 
@@ -143,32 +144,38 @@ module Zaptec
     end
 
     def access_token
+      current_access_token
+        .then do |current|
+          if current.expired?
+            refresh_access_token!
+            current_access_token
+          else
+            current
+          end
+        end
+        .then(&:access_token)
+    end
+
+    def current_access_token
       encrypted_tokens = @token_cache.fetch(TOKENS_CACHE_KEY) do
-        @encryptor.encrypt(request_access_token, cipher_options: { deterministic: true })
+        @encryptor.encrypt(request_access_token.to_json, cipher_options: { deterministic: true })
       end
 
       plain_text_tokens = @encryptor.decrypt(encrypted_tokens)
-
-      JSON.parse(plain_text_tokens).fetch("accessToken")
+      Credentials.parse(JSON.parse(plain_text_tokens))
     end
 
     def refresh_access_token!
       @token_cache.write(
         TOKENS_CACHE_KEY,
-        @encryptor.encrypt(request_access_token, cipher_options: { deterministic: true }),
-        expires_in: 1.day,
-        )
+        @encryptor.encrypt(request_access_token.to_json, cipher_options: { deterministic: true }),
+        expires_in: 1.day
+      )
     rescue Faraday::Error => e
       raise Errors::RequestFailed.new("Request returned status #{e.response_status}", e.response)
     end
 
     # https://developer.easee.cloud/reference/post_api-accounts-login
-    def request_access_token
-      authorize(username:, password:)
-    end
-
-    def require_valid_credentials!
-      raise Errors::Unauthorized if credentials.blank? || credentials.expired?
-    end
+    def request_access_token = authorize(username:, password:)
   end
 end

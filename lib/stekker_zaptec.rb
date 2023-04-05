@@ -11,6 +11,7 @@ require "zaptec/credentials"
 require "zaptec/errors"
 require "zaptec/installation"
 require "zaptec/meter_reading"
+require "zaptec/null_encryptor"
 require "zaptec/state"
 require "zaptec/version"
 

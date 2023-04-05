@@ -1,4 +1,109 @@
 RSpec.describe Zaptec::Client do
+  describe "authentication" do
+    it "obtains and uses a new access token when none is provided" do
+      Timecop.freeze(Time.zone.now.change(usec: 0))
+
+      WebMock::API
+        .stub_request(:post, "https://api.zaptec.com/oauth/token")
+        .with(
+          body: { grant_type: "password", username: "zap", password: "tec" },
+          headers: { "Content-Type": "application/x-www-form-urlencoded" }
+        )
+        .to_return(
+          body: {
+            access_token: "T123",
+            token_type: "Bearer",
+            expires_in: 1.hour.to_i
+          }.to_json
+        )
+
+      WebMock::API
+        .stub_request(:get, "https://api.zaptec.com/api/chargers?Roles=3")
+        .with(headers: { "Authorization" => "Bearer T123" })
+        .to_return(body: { Data: [] }.to_json)
+
+      tokens = { "access_token" => "T123", "expires_at" => 1.hour.from_now.to_i }
+      token_cache = ActiveSupport::Cache::MemoryStore.new
+      client = Zaptec::Client.new(username: "zap", password: "tec", token_cache:)
+
+      expect { client.chargers }
+        .to change { token_cache.fetch(Zaptec::Client::TOKENS_CACHE_KEY) }
+        .from(nil)
+        .to(tokens.to_json)
+    end
+
+    it "re-authorizes when it is expired" do
+      token_cache = ActiveSupport::Cache::MemoryStore.new
+      current_tokens = { "access_token" => "T123", "expires_at" => 2.minutes.ago.to_i }
+      token_cache.write(Zaptec::Client::TOKENS_CACHE_KEY, current_tokens.to_json)
+      new_tokens = { "access_token" => "T789", "expires_at" => 1.hour.from_now.to_i }
+
+      WebMock::API
+        .stub_request(:post, "https://api.zaptec.com/oauth/token")
+        .with(
+          body: { grant_type: "password", username: "zap", password: "tec" },
+          headers: { "Content-Type": "application/x-www-form-urlencoded" }
+        )
+        .to_return(
+          body: {
+            access_token: "T789",
+            token_type: "Bearer",
+            expires_in: 1.hour.to_i
+          }.to_json
+        )
+
+      WebMock::API
+        .stub_request(:get, "https://api.zaptec.com/api/chargers?Roles=3")
+        .with(headers: { "Authorization" => "Bearer T789" })
+        .to_return(body: { Data: [] }.to_json)
+
+      client = Zaptec::Client.new(username: "zap", password: "tec", token_cache:)
+
+      expect { client.chargers }
+        .to change { token_cache.fetch(Zaptec::Client::TOKENS_CACHE_KEY) }
+        .from(current_tokens.to_json)
+        .to(new_tokens.to_json)
+    end
+
+    it "uses the encryptor to encrypt the tokens" do
+      token_cache = ActiveSupport::Cache::MemoryStore.new
+      tokens = { "access_token" => "T123", "expires_at" => 1.hour.from_now.to_i }
+
+      encryptor = instance_double(Zaptec::NullEncryptor)
+      allow(encryptor).to receive(:encrypt).and_return("encrypted")
+      allow(encryptor).to receive(:decrypt).and_return(tokens.to_json)
+
+      WebMock::API
+        .stub_request(:post, "https://api.zaptec.com/oauth/token")
+        .with(
+          body: { grant_type: "password", username: "zap", password: "tec" },
+          headers: { "Content-Type": "application/x-www-form-urlencoded" }
+        )
+        .to_return(
+          body: {
+            access_token: "T123",
+            token_type: "Bearer",
+            expires_in: 1.hour.to_i
+          }.to_json
+        )
+
+      WebMock::API
+        .stub_request(:get, "https://api.zaptec.com/api/chargers?Roles=3")
+        .with(headers: { "Authorization" => "Bearer T123" })
+        .to_return(body: { Data: [] }.to_json)
+
+      client = Zaptec::Client.new(username: "zap", password: "tec", token_cache:, encryptor:)
+
+      expect { client.chargers }
+        .to change { token_cache.fetch(Zaptec::Client::TOKENS_CACHE_KEY) }
+        .from(nil)
+        .to("encrypted")
+
+      expect(encryptor).to have_received(:encrypt).with(tokens.to_json, cipher_options: { deterministic: true })
+      expect(encryptor).to have_received(:decrypt).with("encrypted")
+    end
+  end
+
   describe "#authorize" do
     it "receives a token upon authorization" do
       WebMock::API
@@ -17,7 +122,8 @@ RSpec.describe Zaptec::Client do
 
       Timecop.freeze
 
-      client = Zaptec::Client.new
+      token_cache = ActiveSupport::Cache::MemoryStore.new
+      client = Zaptec::Client.new(username: "zap", password: "tec", token_cache:)
 
       credentials = client.authorize(username: "stekker@example.com", password: "12345")
 
@@ -34,7 +140,8 @@ RSpec.describe Zaptec::Client do
         )
         .to_return(status: 400)
 
-      client = Zaptec::Client.new
+      token_cache = ActiveSupport::Cache::MemoryStore.new
+      client = Zaptec::Client.new(username: "zap", password: "tec", token_cache:)
 
       expect { client.authorize(username: "stekker@example.com", password: "12345") }
         .to raise_error(Zaptec::Errors::AuthorizationFailed)
@@ -47,8 +154,8 @@ RSpec.describe Zaptec::Client do
         .stub_request(:get, "https://api.zaptec.com/api/chargers?Roles=3")
         .to_return(body: chargers_example.to_json)
 
-      credentials = Zaptec::Credentials.new("abc", 1.hour.from_now)
-      client = Zaptec::Client.new(credentials: credentials)
+      token_cache = build_token_cache("T123")
+      client = Zaptec::Client.new(username: "zap", password: "tec", token_cache:)
 
       expect(client.chargers).to be_one
 
@@ -62,14 +169,6 @@ RSpec.describe Zaptec::Client do
           installation_id: "b30adfd3-3442-432e-88ea-8782b7e69b2f"
         )
     end
-
-    it "raises an Unauthorized when the credentials have expired" do
-      credentials = Zaptec::Credentials.new("abc", 1.hour.ago)
-      client = Zaptec::Client.new(credentials: credentials)
-
-      expect { client.chargers }
-        .to raise_error(Zaptec::Errors::Unauthorized)
-    end
   end
 
   describe "#state" do
@@ -78,8 +177,8 @@ RSpec.describe Zaptec::Client do
         .stub_request(:get, "https://api.zaptec.com/api/chargers/123/state")
         .to_return(body: charger_state_example.to_json)
 
-      credentials = Zaptec::Credentials.new("abc", 1.hour.from_now)
-      client = Zaptec::Client.new(credentials: credentials)
+      token_cache = build_token_cache("T123")
+      client = Zaptec::Client.new(username: "zap", password: "tec", token_cache:)
       device_type_apollo = 4
 
       expect(client.state("123", device_type_apollo))
@@ -100,8 +199,8 @@ RSpec.describe Zaptec::Client do
         .stub_request(:get, "https://api.zaptec.com/api/chargers/123/state")
         .to_return(body: charger_state_example.to_json)
 
-      credentials = Zaptec::Credentials.new("abc", 1.hour.from_now)
-      client = Zaptec::Client.new(credentials: credentials)
+      token_cache = build_token_cache("T123")
+      client = Zaptec::Client.new(username: "zap", password: "tec", token_cache:)
       device_type_apollo = 4
       state = client.state("123", device_type_apollo)
 
@@ -127,8 +226,8 @@ RSpec.describe Zaptec::Client do
         ].to_json
       )
 
-    credentials = Zaptec::Credentials.new("abc", 1.hour.from_now)
-    client = Zaptec::Client.new(credentials: credentials)
+    token_cache = build_token_cache("T123")
+    client = Zaptec::Client.new(username: "zap", password: "tec", token_cache:)
     device_type_apollo = 4
 
     expect { client.state("123", device_type_apollo) }.not_to raise_error
@@ -145,8 +244,8 @@ RSpec.describe Zaptec::Client do
           .stub_request(:post, "https://api.zaptec.com/api/chargers/123/sendCommand/#{command_id}")
           .to_return(status: 200)
 
-        credentials = Zaptec::Credentials.new("abc", 1.hour.from_now)
-        client = Zaptec::Client.new(credentials: credentials)
+        token_cache = build_token_cache("T123")
+        client = Zaptec::Client.new(username: "zap", password: "tec", token_cache:)
 
         client.public_send(operation.to_sym, "123")
       end
@@ -157,8 +256,8 @@ RSpec.describe Zaptec::Client do
           .stub_request(:post, "https://api.zaptec.com/api/chargers/123/sendCommand/#{command_id}")
           .to_return(status: 500)
 
-        credentials = Zaptec::Credentials.new("abc", 1.hour.from_now)
-        client = Zaptec::Client.new(credentials: credentials)
+        token_cache = build_token_cache("T123")
+        client = Zaptec::Client.new(username: "zap", password: "tec", token_cache:)
 
         expect { client.public_send(operation.to_sym, "123") }
           .to raise_error(Zaptec::Errors::RequestFailed, "Request returned status 500")
@@ -203,8 +302,8 @@ RSpec.describe Zaptec::Client do
           JSON
         )
 
-      credentials = Zaptec::Credentials.new("abc", 1.hour.from_now)
-      client = Zaptec::Client.new(credentials: credentials)
+      token_cache = build_token_cache("T123")
+      client = Zaptec::Client.new(username: "zap", password: "tec", token_cache:)
 
       installation_hierarchy = client.get_installation_hierarchy("I123")
       circuit = installation_hierarchy.circuits.first
@@ -796,5 +895,14 @@ RSpec.describe Zaptec::Client do
       installation_name: "Antonio Morohof 1",
       installation_id: "b30adfd3-3442-432e-88ea-8782b7e69b2f"
     )
+  end
+
+  def build_token_cache(access_token, expires_at: 1.hour.from_now)
+    ActiveSupport::Cache::MemoryStore.new.tap do |token_cache|
+      token_cache.write(
+        Zaptec::Client::TOKENS_CACHE_KEY,
+        Zaptec::Credentials.new(access_token, expires_at).to_json
+      )
+    end
   end
 end
