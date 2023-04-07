@@ -402,6 +402,34 @@ RSpec.describe Zaptec::Client do
           longitude: 5.231064
         )
     end
+
+    it "can handle missing properties" do
+      WebMock::API
+        .stub_request(:get, "https://api.zaptec.com/api/installation/I123")
+        .to_return(
+          body: <<~JSON
+            {
+              "Id": "1234abcd-12df-4979-sr97-3a69432e8d2c"
+            }
+          JSON
+        )
+
+      token_cache = build_token_cache("T123")
+      client = Zaptec::Client.new(username: "zap", password: "tec", token_cache:)
+
+      installation = client.get_installation("I123")
+
+      expect(installation)
+        .to have_attributes(
+          id: "1234abcd-12df-4979-sr97-3a69432e8d2c",
+          address: nil,
+          zip_code: nil,
+          city: nil,
+          country_code: nil,
+          latitude: nil,
+          longitude: nil
+        )
+    end
   end
 
   private

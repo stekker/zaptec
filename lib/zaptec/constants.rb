@@ -22,6 +22,8 @@ module Zaptec
       end
 
       def country_id_to_country_code(country_id)
+        return if country_id.nil?
+
         constants
           .fetch("Countries")
           .fetch(country_id)
