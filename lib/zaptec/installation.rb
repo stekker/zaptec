@@ -4,10 +4,11 @@ module Zaptec
       @data = data.deep_symbolize_keys
     end
 
-    def id = @data.fetch(:Id)
-
-    def circuits
-      @circuits ||= @data.fetch(:Circuits).map { |data| Circuit.new(data) }
-    end
+    def address = @data.fetch(:Address)
+    def zip_code = @data.fetch(:ZipCode)
+    def city = @data.fetch(:City)
+    def latitude = @data.fetch(:Latitude)
+    def country_code = Constants.country_id_to_country_code(@data.fetch(:CountryId))
+    def longitude = @data.fetch(:Longitude)
   end
 end

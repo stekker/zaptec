@@ -5,6 +5,7 @@ module Zaptec
     end
 
     def id = @data.fetch(:Id)
+    def max_current = @data.fetch(:MaxCurrent)
 
     def chargers
       @chargers ||= @data.fetch(:Chargers).map { |data| Charger.new(data) }

@@ -21,6 +21,20 @@ module Zaptec
           .fetch(command.to_s) { raise "Unknown command '#{command}'" }
       end
 
+      def country_id_to_country_code(country_id)
+        constants
+          .fetch("Countries")
+          .fetch(country_id)
+          .fetch("Code")
+      end
+
+      def network_type_to_name(network_type)
+        constants
+          .fetch("NetworkTypes")
+          .detect { |_name, type| type == network_type }
+          .then { |name, _type| name }
+      end
+
       private
 
       def device_type_observation_ids(device_type)

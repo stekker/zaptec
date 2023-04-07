@@ -309,9 +309,98 @@ RSpec.describe Zaptec::Client do
       circuit = installation_hierarchy.circuits.first
       charger = circuit.chargers.first
 
-      expect(installation_hierarchy.id).to eq "b30adfd3-3442-432e-88ea-8782b7e69b2f"
-      expect(circuit.id).to eq "8043ea1d-31ce-4a20-a953-2ea5721f9d44"
-      expect(charger).to have_attributes(id: "de522271-91f5-45b8-916b-07e258ff07d2", name: "Zaptec")
+      expect(installation_hierarchy)
+        .to have_attributes(
+          id: "b30adfd3-3442-432e-88ea-8782b7e69b2f",
+          name: "Stekker test",
+          network_type: "TN_3_Phase"
+        )
+
+      expect(circuit)
+        .to have_attributes(
+          id: "8043ea1d-31ce-4a20-a953-2ea5721f9d44",
+          max_current: 10
+        )
+
+      expect(charger)
+        .to have_attributes(
+          id: "de522271-91f5-45b8-916b-07e258ff07d2",
+          name: "Zaptec"
+        )
+    end
+  end
+
+  describe "#get_installation" do
+    it "fetches installation information" do
+      WebMock::API
+        .stub_request(:get, "https://api.zaptec.com/api/installation/I123")
+        .to_return(
+          body: <<~JSON
+            {
+              "Id": "1234abcd-12df-4979-sr97-3a69432e8d2c",
+              "Name": "Home",
+              "Address": "Lindelaan 31",
+              "ZipCode": "1234 Ab",
+              "City": "Laderburg",
+              "CountryId": "bda681ab-adcb-4f67-bac5-5cbf28d42cc7",
+              "InstallationType": 0,
+              "MaxCurrent": 123.0,
+              "AvailableCurrentMode": 0,
+              "AvailableCurrentScheduleWeekendActive": false,
+              "InstallationCategoryId": "5c624162-e595-4167-a8bb-8b33a1487b62",
+              "InstallationCategory": "Community_Installation_Category",
+              "UseLoadBalancing": true,
+              "IsRequiredAuthentication": true,
+              "Latitude": 51.949433,
+              "Longitude": 5.231064,
+              "Notes": "Circuit C",
+              "Active": true,
+              "NetworkType": 4,
+              "AvailableInternetAccessPLC": true,
+              "AvailableInternetAccessWiFi": false,
+              "CreatedOnDate": "2017-08-16T09:34:29.78",
+              "UpdatedOn": "2023-03-24T11:00:01.35",
+              "CurrentUserRoles": 70,
+              "AuthenticationType": 0,
+              "MessagingEnabled": false,
+              "RoutingId": "default",
+              "OcppCloudUrlVersion": 0,
+              "TimeZoneName": "(UTC+00:00) United Kingdom Time",
+              "TimeZoneIanaName": "Europe/London",
+              "IsSubscriptionsAvailableForCurrentUser": false,
+              "AvailableFeatures": 183,
+              "EnabledFeatures": 0,
+              "ActiveChargerCount": 21,
+              "Feature_PowerManagement_EcoMode_DepartureTime": 360,
+              "Feature_PowerManagement_EcoMode_MinEnergy": 10.0,
+              "Feature_PowerManagement_Apm_SinglePhaseMappedToPhase": 1,
+              "PropertyIsMinimumPowerOfflineMode": false,
+              "PropertyOfflineModeAllowAnonymous": false,
+              "PropertyExperimentalFeaturesEnabled": 0,
+              "PropertyEnergySensorRippleEnabled": false,
+              "PropertyEnergySensorRippleNumBits": 1,
+              "PropertyEnergySensorRipplePercentBits01": 30,
+              "PropertyEnergySensorRipplePercentBits10": 60,
+              "PropertyFirmwareAutomaticUpdates": true,
+              "PropertySessionMaxStopCount": 0
+            }
+          JSON
+        )
+
+      token_cache = build_token_cache("T123")
+      client = Zaptec::Client.new(username: "zap", password: "tec", token_cache:)
+
+      installation = client.get_installation("I123")
+
+      expect(installation)
+        .to have_attributes(
+          address: "Lindelaan 31",
+          zip_code: "1234 Ab",
+          city: "Laderburg",
+          country_code: "NLD",
+          latitude: 51.949433,
+          longitude: 5.231064
+        )
     end
   end
 

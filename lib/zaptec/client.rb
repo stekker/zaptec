@@ -65,9 +65,16 @@ module Zaptec
         .map { |data| Charger.new(data) }
     end
 
+    # https://api.zaptec.com/help/index.html#/Installation/get_api_installation__id_
+    def get_installation(installation_id)
+      get("/api/installation/#{installation_id}")
+        .then { |response| Installation.new(response.body) }
+    end
+
+    # https://api.zaptec.com/help/index.html#/Installation/get_api_installation__id__hierarchy
     def get_installation_hierarchy(installation_id)
       get("/api/installation/#{installation_id}/hierarchy")
-        .then { |response| Installation.new(response.body) }
+        .then { |response| InstallationHierarchy.new(response.body) }
     end
 
     # https://api.zaptec.com/help/index.html#/Charger/get_api_chargers__id__state
