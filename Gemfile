@@ -3,6 +3,7 @@ source "https://rubygems.org"
 # Specify your gem's dependencies in zaptec.gemspec
 gemspec
 
+gem "gem-release", "~> 2.2"
 gem "jwt", "~> 2.6"
 gem "rake", "~> 13.0"
 gem "rspec", "~> 3.0"

@@ -49,6 +49,7 @@ GEM
     faraday-retry (1.0.3)
     faraday_middleware (1.2.0)
       faraday (~> 1.0)
+    gem-release (2.2.2)
     hashdiff (1.0.1)
     i18n (1.12.0)
       concurrent-ruby (~> 1.0)
@@ -118,6 +119,7 @@ PLATFORMS
   x86_64-linux
 
 DEPENDENCIES
+  gem-release (~> 2.2)
   jwt (~> 2.6)
   rake (~> 13.0)
   rspec (~> 3.0)
