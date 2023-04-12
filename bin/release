@@ -1,0 +1,10 @@
+#!/usr/bin/env bash
+set -euo pipefail
+IFS=$'\n\t'
+set -vx
+
+version="$1"
+bumped_version=$(gem bump --pretend --no-commit | awk '{ print $4 }' | tr -d '[:space:]')
+gem bump --version "$bumped_version"
+bundle install
+gem bump --version "$bumped_version" --tag --push --release
