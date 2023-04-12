@@ -165,6 +165,8 @@ Metrics/CyclomaticComplexity:
 
 Metrics/MethodLength:
   Max: 42
+  Exclude:
+    - "spec/**/*_spec.rb"
 
 Metrics/ModuleLength:
   Enabled: false

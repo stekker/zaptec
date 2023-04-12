@@ -7,14 +7,14 @@ RSpec.describe Zaptec::Client do
         .stub_request(:post, "https://api.zaptec.com/oauth/token")
         .with(
           body: { grant_type: "password", username: "zap", password: "tec" },
-          headers: { "Content-Type": "application/x-www-form-urlencoded" }
+          headers: { "Content-Type": "application/x-www-form-urlencoded" },
         )
         .to_return(
           body: {
             access_token: "T123",
             token_type: "Bearer",
-            expires_in: 1.hour.to_i
-          }.to_json
+            expires_in: 1.hour.to_i,
+          }.to_json,
         )
 
       WebMock::API
@@ -42,14 +42,14 @@ RSpec.describe Zaptec::Client do
         .stub_request(:post, "https://api.zaptec.com/oauth/token")
         .with(
           body: { grant_type: "password", username: "zap", password: "tec" },
-          headers: { "Content-Type": "application/x-www-form-urlencoded" }
+          headers: { "Content-Type": "application/x-www-form-urlencoded" },
         )
         .to_return(
           body: {
             access_token: "T789",
             token_type: "Bearer",
-            expires_in: 1.hour.to_i
-          }.to_json
+            expires_in: 1.hour.to_i,
+          }.to_json,
         )
 
       WebMock::API
@@ -77,14 +77,14 @@ RSpec.describe Zaptec::Client do
         .stub_request(:post, "https://api.zaptec.com/oauth/token")
         .with(
           body: { grant_type: "password", username: "zap", password: "tec" },
-          headers: { "Content-Type": "application/x-www-form-urlencoded" }
+          headers: { "Content-Type": "application/x-www-form-urlencoded" },
         )
         .to_return(
           body: {
             access_token: "T123",
             token_type: "Bearer",
-            expires_in: 1.hour.to_i
-          }.to_json
+            expires_in: 1.hour.to_i,
+          }.to_json,
         )
 
       WebMock::API
@@ -110,14 +110,14 @@ RSpec.describe Zaptec::Client do
         .stub_request(:post, "https://api.zaptec.com/oauth/token")
         .with(
           body: { grant_type: "password", password: "12345", username: "stekker@example.com" },
-          headers: { "Content-Type": "application/x-www-form-urlencoded" }
+          headers: { "Content-Type": "application/x-www-form-urlencoded" },
         )
         .to_return(
           body: {
             access_token: "abc",
             token_type: "Bearer",
-            expires_in: 86_399
-          }.to_json
+            expires_in: 86_399,
+          }.to_json,
         )
 
       Timecop.freeze
@@ -136,7 +136,7 @@ RSpec.describe Zaptec::Client do
         .stub_request(:post, "https://api.zaptec.com/oauth/token")
         .with(
           body: { grant_type: "password", password: "12345", username: "stekker@example.com" },
-          headers: { "Content-Type": "application/x-www-form-urlencoded" }
+          headers: { "Content-Type": "application/x-www-form-urlencoded" },
         )
         .to_return(status: 400)
 
@@ -166,7 +166,7 @@ RSpec.describe Zaptec::Client do
           device_id: "ZAP049387",
           device_type: 4,
           installation_name: "Zaptechof 1",
-          installation_id: "2bbec6f9-c3ce-4edf-a72f-b1b2a663c6ba"
+          installation_id: "2bbec6f9-c3ce-4edf-a72f-b1b2a663c6ba",
         )
     end
   end
@@ -188,7 +188,7 @@ RSpec.describe Zaptec::Client do
           total_charge_power_session: 1.42012,
           charging?: false,
           online?: true,
-          disconnected?: true
+          disconnected?: true,
         )
     end
 
@@ -207,7 +207,7 @@ RSpec.describe Zaptec::Client do
       expect(state.meter_reading)
         .to have_attributes(
           reading_kwh: 2.83012,
-          timestamp: Time.zone.now
+          timestamp: Time.zone.now,
         )
     end
   end
@@ -221,9 +221,9 @@ RSpec.describe Zaptec::Client do
             ChargerId: "93d603a7-ff53-4ed8-8dd6-f79c94819458",
             StateId: 99999,
             Timestamp: "2022-12-05T13:10:10.837",
-            ValueAsString: "1"
-          }
-        ].to_json
+            ValueAsString: "1",
+          },
+        ].to_json,
       )
 
     token_cache = build_token_cache("T123")
@@ -235,7 +235,7 @@ RSpec.describe Zaptec::Client do
 
   {
     pause_charging: 506,
-    resume_charging: 507
+    resume_charging: 507,
   }.each do |operation, command_id|
     describe "##{operation}" do
       # rubocop:disable RSpec/NoExpectationExample
@@ -270,7 +270,7 @@ RSpec.describe Zaptec::Client do
       WebMock::API
         .stub_request(:get, "https://api.zaptec.com/api/installation/I123/hierarchy")
         .to_return(
-          body: <<~JSON
+          body: <<~JSON,
             {
               "Id": "2bbec6f9-c3ce-4edf-a72f-b1b2a663c6ba",
               "Name": "Stekker test",
@@ -313,19 +313,19 @@ RSpec.describe Zaptec::Client do
         .to have_attributes(
           id: "2bbec6f9-c3ce-4edf-a72f-b1b2a663c6ba",
           name: "Stekker test",
-          network_type: "TN_3_Phase"
+          network_type: "TN_3_Phase",
         )
 
       expect(circuit)
         .to have_attributes(
           id: "163fdd03-8149-43ad-a6cb-5a63fa67d1e5",
-          max_current: 10
+          max_current: 10,
         )
 
       expect(charger)
         .to have_attributes(
           id: "93d603a7-ff53-4ed8-8dd6-f79c94819458",
-          name: "Zaptec"
+          name: "Zaptec",
         )
     end
   end
@@ -335,7 +335,7 @@ RSpec.describe Zaptec::Client do
       WebMock::API
         .stub_request(:get, "https://api.zaptec.com/api/installation/I123")
         .to_return(
-          body: <<~JSON
+          body: <<~JSON,
             {
               "Id": "aaa13ff9-e69c-4469-bc4b-d64feb50e603",
               "Name": "Home",
@@ -399,7 +399,7 @@ RSpec.describe Zaptec::Client do
           city: "Laderburg",
           country_code: "NLD",
           latitude: 51.949433,
-          longitude: 5.231064
+          longitude: 5.231064,
         )
     end
 
@@ -407,7 +407,7 @@ RSpec.describe Zaptec::Client do
       WebMock::API
         .stub_request(:get, "https://api.zaptec.com/api/installation/I123")
         .to_return(
-          body: <<~JSON
+          body: <<~JSON,
             {
               "Id": "aaa13ff9-e69c-4469-bc4b-d64feb50e603"
             }
@@ -427,7 +427,7 @@ RSpec.describe Zaptec::Client do
           city: nil,
           country_code: nil,
           latitude: nil,
-          longitude: nil
+          longitude: nil,
         )
     end
   end
@@ -455,9 +455,9 @@ RSpec.describe Zaptec::Client do
           InstallationName: "Zaptechof 1",
           InstallationId: "2bbec6f9-c3ce-4edf-a72f-b1b2a663c6ba",
           AuthenticationType: 2,
-          IsAuthorizationRequired: true
-        }
-      ]
+          IsAuthorizationRequired: true,
+        },
+      ],
     }
   end
 
@@ -467,216 +467,216 @@ RSpec.describe Zaptec::Client do
         ChargerId: "93d603a7-ff53-4ed8-8dd6-f79c94819458",
         StateId: -3,
         Timestamp: "2022-12-05T13:10:10.837",
-        ValueAsString: "1"
+        ValueAsString: "1",
       },
       {
         ChargerId: "93d603a7-ff53-4ed8-8dd6-f79c94819458",
         StateId: -2,
         Timestamp: "2022-12-01T00:40:19.487",
-        ValueAsString: "1"
+        ValueAsString: "1",
       },
       {
         ChargerId: "93d603a7-ff53-4ed8-8dd6-f79c94819458",
         StateId: -1,
-        Timestamp: "2022-12-05T15:29:21.713"
+        Timestamp: "2022-12-05T15:29:21.713",
       },
       {
         ChargerId: "93d603a7-ff53-4ed8-8dd6-f79c94819458",
         StateId: 1,
         Timestamp: "2022-09-16T08:11:01.797",
-        ValueAsString: "0"
+        ValueAsString: "0",
       },
       {
         ChargerId: "93d603a7-ff53-4ed8-8dd6-f79c94819458",
         StateId: 120,
         Timestamp: "2022-09-16T13:09:19.38",
-        ValueAsString: "1"
+        ValueAsString: "1",
       },
       {
         ChargerId: "93d603a7-ff53-4ed8-8dd6-f79c94819458",
         StateId: 145,
         Timestamp: "2022-09-16T08:08:16.06",
-        ValueAsString: "3600"
+        ValueAsString: "3600",
       },
       {
         ChargerId: "93d603a7-ff53-4ed8-8dd6-f79c94819458",
         StateId: 147,
         Timestamp: "2022-09-28T13:47:52.52",
-        ValueAsString: "600"
+        ValueAsString: "600",
       },
       {
         ChargerId: "93d603a7-ff53-4ed8-8dd6-f79c94819458",
         StateId: 150,
         Timestamp: "2022-09-16T12:40:34.537",
-        ValueAsString: "LTE"
+        ValueAsString: "LTE",
       },
       {
         ChargerId: "93d603a7-ff53-4ed8-8dd6-f79c94819458",
         StateId: 151,
         Timestamp: "2022-09-16T08:08:16.057",
-        ValueAsString: "0"
+        ValueAsString: "0",
       },
       {
         ChargerId: "93d603a7-ff53-4ed8-8dd6-f79c94819458",
         StateId: 153,
         Timestamp: "2022-09-16T08:08:16.18",
-        ValueAsString: "0.700"
+        ValueAsString: "0.700",
       },
       {
         ChargerId: "93d603a7-ff53-4ed8-8dd6-f79c94819458",
         StateId: 201,
         Timestamp: "2022-12-05T12:56:14.447",
-        ValueAsString: "22.399"
+        ValueAsString: "22.399",
       },
       {
         ChargerId: "93d603a7-ff53-4ed8-8dd6-f79c94819458",
         StateId: 202,
         Timestamp: "2022-09-17T11:59:13.493",
-        ValueAsString: "31.231"
+        ValueAsString: "31.231",
       },
       {
         ChargerId: "93d603a7-ff53-4ed8-8dd6-f79c94819458",
         StateId: 204,
         Timestamp: "2022-09-17T11:59:13.493",
-        ValueAsString: "31.568"
+        ValueAsString: "31.568",
       },
       {
         ChargerId: "93d603a7-ff53-4ed8-8dd6-f79c94819458",
         StateId: 205,
         Timestamp: "2022-09-17T11:59:13.493",
-        ValueAsString: "31.652"
+        ValueAsString: "31.652",
       },
       {
         ChargerId: "93d603a7-ff53-4ed8-8dd6-f79c94819458",
         StateId: 206,
         Timestamp: "2022-09-17T11:59:13.497",
-        ValueAsString: "28.311"
+        ValueAsString: "28.311",
       },
       {
         ChargerId: "93d603a7-ff53-4ed8-8dd6-f79c94819458",
         StateId: 207,
         Timestamp: "2022-09-17T11:59:13.497",
-        ValueAsString: "30.352"
+        ValueAsString: "30.352",
       },
       {
         ChargerId: "93d603a7-ff53-4ed8-8dd6-f79c94819458",
         StateId: 270,
         Timestamp: "2022-12-05T12:56:14.447",
-        ValueAsString: "31.923"
+        ValueAsString: "31.923",
       },
       {
         ChargerId: "93d603a7-ff53-4ed8-8dd6-f79c94819458",
         StateId: 501,
         Timestamp: "2022-12-01T00:39:23.78",
-        ValueAsString: "1.257"
+        ValueAsString: "1.257",
       },
       {
         ChargerId: "93d603a7-ff53-4ed8-8dd6-f79c94819458",
         StateId: 502,
         Timestamp: "2022-12-01T00:39:23.783",
-        ValueAsString: "3.196"
+        ValueAsString: "3.196",
       },
       {
         ChargerId: "93d603a7-ff53-4ed8-8dd6-f79c94819458",
         StateId: 503,
         Timestamp: "2022-12-01T00:39:23.783",
-        ValueAsString: "1.089"
+        ValueAsString: "1.089",
       },
       {
         ChargerId: "93d603a7-ff53-4ed8-8dd6-f79c94819458",
         StateId: 507,
         Timestamp: "2022-11-30T22:46:54.887",
-        ValueAsString: "0.022"
+        ValueAsString: "0.022",
       },
       {
         ChargerId: "93d603a7-ff53-4ed8-8dd6-f79c94819458",
         StateId: 508,
         Timestamp: "2022-09-28T13:43:03",
-        ValueAsString: "0.023"
+        ValueAsString: "0.023",
       },
       {
         ChargerId: "93d603a7-ff53-4ed8-8dd6-f79c94819458",
         StateId: 509,
         Timestamp: "2022-12-01T00:39:23.78",
-        ValueAsString: "0.022"
+        ValueAsString: "0.022",
       },
       {
         ChargerId: "93d603a7-ff53-4ed8-8dd6-f79c94819458",
         StateId: 510,
         Timestamp: "2022-09-16T08:06:11.157",
-        ValueAsString: "10.000"
+        ValueAsString: "10.000",
       },
       {
         ChargerId: "93d603a7-ff53-4ed8-8dd6-f79c94819458",
         StateId: 511,
         Timestamp: "2022-09-16T08:00:57.967",
-        ValueAsString: "6.000"
+        ValueAsString: "6.000",
       },
       {
         ChargerId: "93d603a7-ff53-4ed8-8dd6-f79c94819458",
         StateId: 513,
         Timestamp: "2022-09-28T13:42:37.577",
-        ValueAsString: "2.83012"
+        ValueAsString: "2.83012",
       },
       {
         ChargerId: "93d603a7-ff53-4ed8-8dd6-f79c94819458",
         StateId: 519,
         Timestamp: "2022-10-01T16:59:15.767",
-        ValueAsString: "0"
+        ValueAsString: "0",
       },
       {
         ChargerId: "93d603a7-ff53-4ed8-8dd6-f79c94819458",
         StateId: 520,
         Timestamp: "2022-09-16T08:00:57.967",
-        ValueAsString: "3"
+        ValueAsString: "3",
       },
       {
         ChargerId: "93d603a7-ff53-4ed8-8dd6-f79c94819458",
         StateId: 522,
         Timestamp: "2022-09-16T09:01:26.483",
-        ValueAsString: "4"
+        ValueAsString: "4",
       },
       {
         ChargerId: "93d603a7-ff53-4ed8-8dd6-f79c94819458",
         StateId: 523,
         Timestamp: "2022-09-16T08:00:57.97",
-        ValueAsString: "10.000"
+        ValueAsString: "10.000",
       },
       {
         ChargerId: "93d603a7-ff53-4ed8-8dd6-f79c94819458",
         StateId: 544,
         Timestamp: "2022-09-16T08:08:16.063",
-        ValueAsString: "2"
+        ValueAsString: "2",
       },
       {
         ChargerId: "93d603a7-ff53-4ed8-8dd6-f79c94819458",
         StateId: 545,
         Timestamp: "2022-09-16T08:00:52.687",
-        ValueAsString: "0"
+        ValueAsString: "0",
       },
       {
         ChargerId: "93d603a7-ff53-4ed8-8dd6-f79c94819458",
         StateId: 546,
         Timestamp: "2022-09-16T08:05:21.137",
-        ValueAsString: "10.000"
+        ValueAsString: "10.000",
       },
       {
         ChargerId: "93d603a7-ff53-4ed8-8dd6-f79c94819458",
         StateId: 547,
         Timestamp: "2022-09-16T08:05:21.137",
-        ValueAsString: "10.000"
+        ValueAsString: "10.000",
       },
       {
         ChargerId: "93d603a7-ff53-4ed8-8dd6-f79c94819458",
         StateId: 548,
         Timestamp: "2022-09-16T08:00:57.423",
-        ValueAsString: "4"
+        ValueAsString: "4",
       },
       {
         ChargerId: "93d603a7-ff53-4ed8-8dd6-f79c94819458",
         StateId: 553,
         Timestamp: "2022-10-07T18:53:10.193",
-        ValueAsString: "1.42012"
+        ValueAsString: "1.42012",
       },
       {
         ChargerId: "93d603a7-ff53-4ed8-8dd6-f79c94819458",
@@ -696,70 +696,70 @@ RSpec.describe Zaptec::Client do
                 "RI" => "1-0:1.8.0",
                 "RU" => "kWh",
                 "RT" => "AC",
-                "ST" => "G"
-              }
-            ]
+                "ST" => "G",
+              },
+            ],
           }.to_json
-        }"
+        }",
       },
       {
         ChargerId: "93d603a7-ff53-4ed8-8dd6-f79c94819458",
         StateId: 702,
         Timestamp: "2022-10-05T08:28:37.36",
-        ValueAsString: "12"
+        ValueAsString: "12",
       },
       {
         ChargerId: "93d603a7-ff53-4ed8-8dd6-f79c94819458",
         StateId: 708,
         Timestamp: "2022-10-05T08:28:28.33",
-        ValueAsString: "0.000"
+        ValueAsString: "0.000",
       },
       {
         ChargerId: "93d603a7-ff53-4ed8-8dd6-f79c94819458",
         StateId: 710,
         Timestamp: "2022-10-05T08:28:17.433",
-        ValueAsString: "1"
+        ValueAsString: "1",
       },
       {
         ChargerId: "93d603a7-ff53-4ed8-8dd6-f79c94819458",
         StateId: 711,
         Timestamp: "2022-09-16T08:06:11.16",
-        ValueAsString: "1"
+        ValueAsString: "1",
       },
       {
         ChargerId: "93d603a7-ff53-4ed8-8dd6-f79c94819458",
         StateId: 712,
         Timestamp: "2022-09-16T08:06:12.187",
-        ValueAsString: "0"
+        ValueAsString: "0",
       },
       {
         ChargerId: "93d603a7-ff53-4ed8-8dd6-f79c94819458",
         StateId: 714,
         Timestamp: "2022-10-16T12:21:50.493",
-        ValueAsString: "0"
+        ValueAsString: "0",
       },
       {
         ChargerId: "93d603a7-ff53-4ed8-8dd6-f79c94819458",
         StateId: 715,
         Timestamp: "2022-09-16T08:00:52.687",
-        ValueAsString: "4"
+        ValueAsString: "4",
       },
       {
         ChargerId: "93d603a7-ff53-4ed8-8dd6-f79c94819458",
         StateId: 718,
         Timestamp: "2022-09-16T11:04:27.243",
-        ValueAsString: "0"
+        ValueAsString: "0",
       },
       {
         ChargerId: "93d603a7-ff53-4ed8-8dd6-f79c94819458",
         StateId: 721,
         Timestamp: "2022-10-07T18:53:13.037",
-        ValueAsString: ""
+        ValueAsString: "",
       },
       {
         ChargerId: "93d603a7-ff53-4ed8-8dd6-f79c94819458",
         StateId: 722,
-        Timestamp: "2022-10-05T08:28:17.433"
+        Timestamp: "2022-10-05T08:28:17.433",
       },
       {
         ChargerId: "93d603a7-ff53-4ed8-8dd6-f79c94819458",
@@ -789,7 +789,7 @@ RSpec.describe Zaptec::Client do
                     "RI" => "1-0:1.8.0",
                     "RU" => "kWh",
                     "RT" => "AC",
-                    "ST" => "G"
+                    "ST" => "G",
                   },
                   {
                     "TM" => "2022-09-28T13:47:51,000+00:00 R",
@@ -798,170 +798,170 @@ RSpec.describe Zaptec::Client do
                     "RI" => "1-0:1.8.0",
                     "RU" => "kWh",
                     "RT" => "AC",
-                    "ST" => "G"
-                  }
-                ]
+                    "ST" => "G",
+                  },
+                ],
               }.to_json
-            }"
-        }.to_json
+            }",
+        }.to_json,
       },
       {
         ChargerId: "93d603a7-ff53-4ed8-8dd6-f79c94819458",
         StateId: 733,
         Timestamp: "2022-09-16T08:11:01.797",
-        ValueAsString: "0"
+        ValueAsString: "0",
       },
       {
         ChargerId: "93d603a7-ff53-4ed8-8dd6-f79c94819458",
         StateId: 749,
         Timestamp: "2022-09-16T09:02:35.513",
-        ValueAsString: "1"
+        ValueAsString: "1",
       },
       {
         ChargerId: "93d603a7-ff53-4ed8-8dd6-f79c94819458",
         StateId: 751,
         Timestamp: "2022-09-16T12:57:05.99",
-        ValueAsString: "0"
+        ValueAsString: "0",
       },
       {
         ChargerId: "93d603a7-ff53-4ed8-8dd6-f79c94819458",
         StateId: 760,
         Timestamp: "2022-09-16T08:11:42.957",
-        ValueAsString: "NLD"
+        ValueAsString: "NLD",
       },
       {
         ChargerId: "93d603a7-ff53-4ed8-8dd6-f79c94819458",
         StateId: 761,
         Timestamp: "2022-09-16T08:11:43.973",
-        ValueAsString: "Europe/Amsterdam"
+        ValueAsString: "Europe/Amsterdam",
       },
       {
         ChargerId: "93d603a7-ff53-4ed8-8dd6-f79c94819458",
         StateId: 800,
         Timestamp: "2022-09-16T08:06:11.16",
-        ValueAsString: "2bbec6f9-c3ce-4edf-a72f-b1b2a663c6ba"
+        ValueAsString: "2bbec6f9-c3ce-4edf-a72f-b1b2a663c6ba",
       },
       {
         ChargerId: "93d603a7-ff53-4ed8-8dd6-f79c94819458",
         StateId: 801,
         Timestamp: "2022-09-16T08:00:57.97",
-        ValueAsString: "default"
+        ValueAsString: "default",
       },
       {
         ChargerId: "93d603a7-ff53-4ed8-8dd6-f79c94819458",
         StateId: 802,
         Timestamp: "2022-09-16T08:06:11.16",
-        ValueAsString: "Zaptec"
+        ValueAsString: "Zaptec",
       },
       {
         ChargerId: "93d603a7-ff53-4ed8-8dd6-f79c94819458",
         StateId: 804,
         Timestamp: "2022-09-16T08:06:10.637",
-        ValueAsString: "0"
+        ValueAsString: "0",
       },
       {
         ChargerId: "93d603a7-ff53-4ed8-8dd6-f79c94819458",
         StateId: 805,
         Timestamp: "2022-09-16T08:06:11.163",
-        ValueAsString: "0"
+        ValueAsString: "0",
       },
       {
         ChargerId: "93d603a7-ff53-4ed8-8dd6-f79c94819458",
         StateId: 807,
         Timestamp: "2022-12-01T00:39:23.813",
-        ValueAsString: "#2 mqttUncon:3900 disc:4195 noc:4195 op:1"
+        ValueAsString: "#2 mqttUncon:3900 disc:4195 noc:4195 op:1",
       },
       {
         ChargerId: "93d603a7-ff53-4ed8-8dd6-f79c94819458",
         StateId: 808,
         Timestamp: "2022-12-05T12:56:14.45",
         ValueAsString: "4d 12h15m07s T_EM: 14.01 13.67 13.54  T_M: 13.16 13.70   V: 1.21 3.14 1.07   " \
-                       "I: 0.02 0.02 0.02  C12 CM1 MCnt:4297384 Rs:0"
+                       "I: 0.02 0.02 0.02  C12 CM1 MCnt:4297384 Rs:0",
       },
       {
         ChargerId: "93d603a7-ff53-4ed8-8dd6-f79c94819458",
         StateId: 809,
         Timestamp: "2022-12-01T00:39:23.58",
-        ValueAsString: "60.000"
+        ValueAsString: "60.000",
       },
       {
         ChargerId: "93d603a7-ff53-4ed8-8dd6-f79c94819458",
         StateId: 811,
         Timestamp: "2022-10-07T18:53:13.04",
-        ValueAsString: "1"
+        ValueAsString: "1",
       },
       {
         ChargerId: "93d603a7-ff53-4ed8-8dd6-f79c94819458",
         StateId: 815,
         Timestamp: "2022-09-16T12:40:34.39",
-        ValueAsString: "3"
+        ValueAsString: "3",
       },
       {
         ChargerId: "93d603a7-ff53-4ed8-8dd6-f79c94819458",
         StateId: 823,
         Timestamp: "2022-09-16T08:08:16.06",
-        ValueAsString: "8"
+        ValueAsString: "8",
       },
       {
         ChargerId: "93d603a7-ff53-4ed8-8dd6-f79c94819458",
         StateId: 908,
         Timestamp: "2022-09-16T08:11:01.837",
-        ValueAsString: "1.0.0.6"
+        ValueAsString: "1.0.0.6",
       },
       {
         ChargerId: "93d603a7-ff53-4ed8-8dd6-f79c94819458",
         StateId: 909,
         Timestamp: "2022-09-16T12:40:34.39",
-        ValueAsString: "0"
+        ValueAsString: "0",
       },
       {
         ChargerId: "93d603a7-ff53-4ed8-8dd6-f79c94819458",
         StateId: 911,
         Timestamp: "2022-09-16T08:11:01.833",
-        ValueAsString: "1.1.0.5"
+        ValueAsString: "1.1.0.5",
       },
       {
         ChargerId: "93d603a7-ff53-4ed8-8dd6-f79c94819458",
         StateId: 916,
         Timestamp: "2022-09-16T08:11:01.837",
-        ValueAsString: "1.1.0.5"
+        ValueAsString: "1.1.0.5",
       },
       {
         ChargerId: "93d603a7-ff53-4ed8-8dd6-f79c94819458",
         StateId: 917,
         Timestamp: "2022-09-16T08:11:01.837",
-        ValueAsString: "1"
+        ValueAsString: "1",
       },
       {
         ChargerId: "93d603a7-ff53-4ed8-8dd6-f79c94819458",
         StateId: 918,
         Timestamp: "2022-09-16T08:11:01.84",
-        ValueAsString: "1"
+        ValueAsString: "1",
       },
       {
         ChargerId: "93d603a7-ff53-4ed8-8dd6-f79c94819458",
         StateId: 952,
         Timestamp: "2022-09-16T08:08:16.097",
-        ValueAsString: "40:91:51:2e:2b:40"
+        ValueAsString: "40:91:51:2e:2b:40",
       },
       {
         ChargerId: "93d603a7-ff53-4ed8-8dd6-f79c94819458",
         StateId: 960,
         Timestamp: "2022-09-16T12:40:33.423",
-        ValueAsString: "242016001458383"
+        ValueAsString: "242016001458383",
       },
       {
         ChargerId: "93d603a7-ff53-4ed8-8dd6-f79c94819458",
         StateId: 962,
         Timestamp: "2022-09-16T12:40:33.427",
-        ValueAsString: "89470060210810145491"
+        ValueAsString: "89470060210810145491",
       },
       {
         ChargerId: "93d603a7-ff53-4ed8-8dd6-f79c94819458",
         StateId: 963,
         Timestamp: "2022-09-16T12:40:33.427",
-        ValueAsString: "862020054465567"
-      }
+        ValueAsString: "862020054465567",
+      },
     ]
   end
 
@@ -997,9 +997,9 @@ RSpec.describe Zaptec::Client do
           "OcppCloudUrlVersion" => 0,
           "IsSubscriptionsAvailableForCurrentUser" => false,
           "AvailableFeatures" => 471,
-          "EnabledFeatures" => 0
-        }
-      ]
+          "EnabledFeatures" => 0,
+        },
+      ],
     }
   end
 
@@ -1010,7 +1010,7 @@ RSpec.describe Zaptec::Client do
       device_id: "ZAP049387",
       device_type: 4,
       installation_name: "Zaptechof 1",
-      installation_id: "2bbec6f9-c3ce-4edf-a72f-b1b2a663c6ba"
+      installation_id: "2bbec6f9-c3ce-4edf-a72f-b1b2a663c6ba",
     )
   end
 
@@ -1018,7 +1018,7 @@ RSpec.describe Zaptec::Client do
     ActiveSupport::Cache::MemoryStore.new.tap do |token_cache|
       token_cache.write(
         Zaptec::Client::TOKENS_CACHE_KEY,
-        Zaptec::Credentials.new(access_token, expires_at).to_json
+        Zaptec::Credentials.new(access_token, expires_at).to_json,
       )
     end
   end
