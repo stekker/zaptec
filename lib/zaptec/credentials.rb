@@ -14,7 +14,7 @@ module Zaptec
     def self.parse(data)
       new(
         data.fetch("access_token"),
-        Time.zone.at(data.fetch("expires_at"))
+        Time.zone.at(data.fetch("expires_at")),
       )
     end
 

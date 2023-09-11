@@ -42,16 +42,16 @@ module Zaptec
         {
           username:,
           password:,
-          grant_type: "password"
+          grant_type: "password",
         }.to_query,
         {
-          "Content-Type": "application/x-www-form-urlencoded"
-        }
+          "Content-Type": "application/x-www-form-urlencoded",
+        },
       )
 
       @credentials = Zaptec::Credentials.new(
         response.body["access_token"],
-        start + response.body["expires_in"].to_f
+        start + response.body["expires_in"].to_f,
       )
     rescue Faraday::BadRequestError
       raise Errors::AuthorizationFailed
@@ -84,7 +84,7 @@ module Zaptec
         .to_h do |state|
           [
             Constants.observation_state_id_to_name(state_id: state.fetch("StateId"), device_type:),
-            state.fetch("ValueAsString", nil)
+            state.fetch("ValueAsString", nil),
           ]
         end
         .then { |data| State.new(data) }
@@ -176,7 +176,7 @@ module Zaptec
       @token_cache.write(
         TOKENS_CACHE_KEY,
         @encryptor.encrypt(request_access_token.to_json, cipher_options: { deterministic: true }),
-        expires_in: 1.day
+        expires_in: 1.day,
       )
     rescue Faraday::Error => e
       raise Errors::RequestFailed.new("Request returned status #{e.response_status}", e.response)

@@ -1,350 +1,50 @@
 require:
-  - rubocop-rails
   - rubocop-rspec
 
 AllCops:
   NewCops: enable
-  Exclude:
-    - "vendor/**/*"
-    - "bin/**/*"
-    - "node_modules/**/*"
-    - "db/schema.rb"
-    - "db/sequent_schema.rb"
-    - "db/seeds.rb"
-    - "db/seed/**/*"
-    - "db/migrate/**/*"
 
-Rails/EnvironmentVariableAccess:
-  AllowReads: true
-
-Rails/HasAndBelongsToMany:
-  Enabled: false
-
-RSpec/VerifiedDoubles:
-  Enabled: true
-  Exclude:
-    - "spec/components/previews/**/*"
-
-Style/MultilineBlockChain:
-  Enabled: false
-
-RSpec/NoExpectationExample:
-  Exclude:
-    - "spec/domain/**/*"
-
-Style/SymbolArray:
-  EnforcedStyle: brackets
-
-Metrics/ParameterLists:
-  Enabled: true
-  CountKeywordArgs: false
-
-Style/NumericLiterals:
-  Enabled: false
-
-Style/FrozenStringLiteralComment:
-  EnforcedStyle: never
-
-Style/GuardClause:
-  Enabled: false
-
-Style/ClassAndModuleChildren:
-  Enabled: false
-
-Lint/DuplicateBranch:
-  Enabled: false
-
-Lint/RaiseException:
+Layout/BeginEndAlignment:
   Enabled: true
 
-Rails/SkipsModelValidations:
-  Enabled: false
-
-Lint/StructNewOverride:
+Layout/BlockAlignment:
   Enabled: true
-
-Rails:
-  Enabled: true
-
-Style/AccessorGrouping:
-  Enabled: true
-
-Style/IfInsideElse:
-  Enabled: false
-
-Rails/LexicallyScopedActionFilter:
-  Enabled: false
-
-Style/BisectedAttrAccessor:
-  Enabled: true
-Style/RedundantAssignment:
-  Enabled: true
-Rails/ActiveRecordCallbacksOrder:
-  Enabled: true
-Rails/FindById:
-  Enabled: true
-Rails/Inquiry:
-  Enabled: false
-Rails/MailerName:
-  Enabled: true
-Rails/MatchRoute:
-  Enabled: true
-Rails/NegateInclude:
-  Enabled: true
-Rails/Pluck:
-  Enabled: true
-Rails/PluckInWhere:
-  Enabled: true
-Rails/RenderInline:
-  Enabled: true
-Rails/RenderPlainText:
-  Enabled: true
-Rails/ShortI18n:
-  Enabled: true
-Rails/WhereExists:
-  Enabled: true
-Lint/DuplicateElsifCondition:
-  Enabled: true
-Style/ArrayCoercion:
-  Enabled: true
-Style/CaseLikeIf:
-  Enabled: true
-Style/HashAsLastArrayItem:
-  Enabled: true
-Style/HashLikeCase:
-  Enabled: true
-Style/RedundantFileExtensionInRequire:
-  Enabled: true
-
-# Allow emoji in comments
-Style/AsciiComments:
-  Enabled: false
-
-Naming/PredicateName:
-  Enabled: true
-  ForbiddenPrefixes:
-    is_
-
-Naming/VariableNumber:
-  Enabled: true
-  Exclude:
-    - "spec/**/*"
-    - "gems/we_connect/spec//**/*"
-
-Style/EmptyMethod:
-  EnforcedStyle: expanded
-
-Style/StringLiterals:
-  EnforcedStyle: double_quotes
-
-Style/StringLiteralsInInterpolation:
-  EnforcedStyle: double_quotes
-  Exclude:
-    - "spec/**/*"
-
-Layout/TrailingWhitespace:
-  Enabled: true
-  AllowInHeredoc: true
-
-Metrics/ClassLength:
-  Enabled: false
-
-Layout/LineLength:
-  Enabled: true
-  Max: 115 # Readable github.com diffs
-
-Style/Documentation:
-  Enabled: false
+  EnforcedStyleAlignWith: start_of_block
 
 Layout/EmptyLineBetweenDefs:
   Enabled: false
 
-Metrics/MethodLength:
-  Max: 42
-  Exclude:
-    - "**/spec/**/*"
-
-Metrics/BlockLength:
-  Exclude:
-    - "**/spec/**/*"
-    - "config/routes.rb"
-    - "**/*.gemspec"
-
-Lint/UselessAssignment:
-  Exclude:
-    - "spec/**/*"
-
-Style/HashEachMethods:
-  Enabled: true
-
-Style/HashTransformKeys:
-  Enabled: true
-
-Style/HashTransformValues:
-  Enabled: true
-
-Layout/SpaceAroundMethodCallOperator:
-  Enabled: true
-
-Style/ExponentialNotation:
-  Enabled: true
-
 Layout/EmptyLinesAroundAttributeAccessor:
   Enabled: true
 
-Lint/DeprecatedOpenSSLConstant:
+Layout/FirstArgumentIndentation:
   Enabled: true
+  EnforcedStyle: consistent
 
-Style/SlicingWithRange:
+Layout/FirstArrayElementIndentation:
   Enabled: true
+  EnforcedStyle: consistent
 
-Style/IfUnlessModifier:
-  Enabled: false
-
-Lint/MixedRegexpCaptureTypes:
-  Enabled: true
-
-Style/RedundantFetchBlock:
-  Enabled: true
-
-Style/RedundantRegexpCharacterClass:
-  Enabled: true
-
-Style/RedundantRegexpEscape:
-  Enabled: true
-
-Metrics/CyclomaticComplexity:
-  Max: 42
-
-Metrics/PerceivedComplexity:
-  Max: 42
-
-Style/RescueModifier:
-  Enabled: false
-
-Style/Lambda:
-  EnforcedStyle: literal
-
-Style/BlockDelimiters:
-  Enabled: true
-
-Style/SingleArgumentDig: # (new in 0.89)
-  Enabled: true
-
-Lint/BinaryOperatorWithIdenticalOperands: # (new in 0.89)
-  Enabled: true
-Lint/DuplicateRequire: # (new in 0.90)
-  Enabled: true
-Lint/DuplicateRescueException: # (new in 0.89)
-  Enabled: true
-Lint/EmptyConditionalBody: # (new in 0.89)
-  Enabled: true
-Lint/EmptyFile: # (new in 0.90)
-  Enabled: true
-Lint/FloatComparison: # (new in 0.89)
-  Enabled: true
-Lint/MissingSuper: # (new in 0.89)
-  Enabled: true
-Lint/OutOfRangeRegexpRef: # (new in 0.89)
-  Enabled: true
-Lint/SelfAssignment: # (new in 0.89)
-  Enabled: true
-Lint/TopLevelReturnWithArgument: # (new in 0.89)
-  Enabled: true
-Lint/TrailingCommaInAttributeDeclaration: # (new in 0.90)
-  Enabled: true
-Lint/UnreachableLoop: # (new in 0.89)
-  Enabled: true
-Lint/UselessMethodDefinition: # (new in 0.90)
-  Enabled: true
-Style/CombinableLoops: # (new in 0.90)
-  Enabled: true
-Style/ExplicitBlockArgument: # (new in 0.89)
-  Enabled: true
-Style/GlobalStdStream: # (new in 0.89)
-  Enabled: true
-Style/KeywordParametersOrder: # (new in 0.90)
-  Enabled: true
-Style/OptionalBooleanParameter: # (new in 0.89)
-  Enabled: true
-Style/RedundantSelfAssignment: # (new in 0.90)
-  Enabled: true
-Style/SoleNestedConditional: # (new in 0.89)
-  Enabled: true
-Style/StringConcatenation: # (new in 0.89)
-  Enabled: true
-
-Metrics/ModuleLength:
-  Enabled: false
-
-Layout/BeginEndAlignment: # (new in 0.91)
-  Enabled: true
-Lint/ConstantDefinitionInBlock: # (new in 0.91)
-  Enabled: true
-Lint/IdentityComparison: # (new in 0.91)
-  Enabled: true
-Lint/UselessTimes: # (new in 0.91)
-  Enabled: true
-Rails/AfterCommitOverride: # (new in 2.8)
-  Enabled: true
-Rails/SquishedSQLHeredocs: # (new in 2.8)
-  Enabled: true
-Rails/WhereNot: # (new in 2.8)
-  Enabled: true
-Metrics/AbcSize:
-  Enabled: false
-
-Rails/UnknownEnv:
-  Environments:
-    - production
-    - development
-    - test
-    - staging
-
-RSpec/DescribeClass:
-  Enabled: false
-RSpec/DescribedClass:
-  Enabled: false
-RSpec/NestedGroups:
-  Max: 4
-RSpec/MultipleExpectations:
-  Enabled: false
-RSpec/ExampleLength:
-  Enabled: false
-RSpec/AnyInstance:
-  Enabled: false
-
-# No translations needed in Admin, for now:
-Rails/I18nLocaleTexts:
-  Exclude:
-    - "app/controllers/admin/**/*"
-
-##
-# Multi-line formatting (hashes)
-##
-Layout/FirstHashElementLineBreak:
+Layout/FirstArrayElementLineBreak:
   Enabled: true
 
 Layout/FirstHashElementIndentation:
   Enabled: true
   EnforcedStyle: consistent
 
-Layout/MultilineHashBraceLayout:
-  Enabled: true
-  EnforcedStyle: new_line
-
-Layout/MultilineHashKeyLineBreaks:
+Layout/FirstHashElementLineBreak:
   Enabled: true
 
-##
-# Multi-line formatting (array)
-##
-Layout/FirstArrayElementLineBreak:
+Layout/FirstMethodArgumentLineBreak:
   Enabled: true
 
-Layout/FirstArrayElementIndentation:
+Layout/FirstParameterIndentation:
   Enabled: true
   EnforcedStyle: consistent
+
+Layout/LineLength:
+  Enabled: true
+  Max: 115
 
 Layout/MultilineArrayBraceLayout:
   Enabled: true
@@ -353,31 +53,294 @@ Layout/MultilineArrayBraceLayout:
 Layout/MultilineArrayLineBreaks:
   Enabled: true
 
-##
-# Multi-line formatting (methods/arguments/blocks)
-##
-Layout/FirstMethodArgumentLineBreak:
+Layout/MultilineHashBraceLayout:
+  Enabled: true
+  EnforcedStyle: new_line
+
+Layout/MultilineHashKeyLineBreaks:
   Enabled: true
 
-Layout/FirstArgumentIndentation:
+Layout/MultilineMethodArgumentLineBreaks:
   Enabled: true
-  EnforcedStyle: consistent
-
-Layout/FirstParameterIndentation:
-  Enabled: true
-  EnforcedStyle: consistent
 
 Layout/MultilineMethodCallBraceLayout:
   Enabled: true
   EnforcedStyle: new_line
 
-Layout/MultilineMethodArgumentLineBreaks:
-  Enabled: true
-
 Layout/MultilineMethodCallIndentation:
   Enabled: true
   EnforcedStyle: indented
 
-Layout/BlockAlignment:
+Layout/SpaceAroundMethodCallOperator:
   Enabled: true
-  EnforcedStyleAlignWith: start_of_block
+
+Layout/TrailingWhitespace:
+  AllowInHeredoc: true
+  Enabled: true
+
+Lint/AmbiguousBlockAssociation:
+  Exclude:
+    - spec/**/*
+
+Lint/BinaryOperatorWithIdenticalOperands:
+  Enabled: true
+
+Lint/ConstantDefinitionInBlock:
+  Enabled: true
+
+Lint/DeprecatedOpenSSLConstant:
+  Enabled: true
+
+Lint/DuplicateBranch:
+  Enabled: false
+
+Lint/DuplicateElsifCondition:
+  Enabled: true
+
+Lint/DuplicateRequire:
+  Enabled: true
+
+Lint/DuplicateRescueException:
+  Enabled: true
+
+Lint/EmptyConditionalBody:
+  Enabled: true
+
+Lint/EmptyFile:
+  Enabled: true
+
+Lint/FloatComparison:
+  Enabled: true
+
+Lint/IdentityComparison:
+  Enabled: true
+
+Lint/MissingSuper:
+  Enabled: true
+
+Lint/MixedRegexpCaptureTypes:
+  Enabled: true
+
+Lint/OutOfRangeRegexpRef:
+  Enabled: true
+
+Lint/RaiseException:
+  Enabled: true
+
+Lint/SelfAssignment:
+  Enabled: true
+
+Lint/StructNewOverride:
+  Enabled: true
+
+Lint/TopLevelReturnWithArgument:
+  Enabled: true
+
+Lint/TrailingCommaInAttributeDeclaration:
+  Enabled: true
+
+Lint/UnreachableLoop:
+  Enabled: true
+
+Lint/UselessAssignment:
+  Enabled: true
+
+Lint/UselessMethodDefinition:
+  Enabled: true
+
+Lint/UselessTimes:
+  Enabled: true
+
+Metrics/AbcSize:
+  Enabled: false
+
+Metrics/BlockLength:
+  Enabled: true
+
+Metrics/ClassLength:
+  Enabled: false
+
+Metrics/CyclomaticComplexity:
+  Max: 42
+
+Metrics/MethodLength:
+  Max: 42
+  Exclude:
+    - "spec/**/*_spec.rb"
+
+Metrics/ModuleLength:
+  Enabled: false
+
+Metrics/ParameterLists:
+  CountKeywordArgs: false
+  Enabled: true
+
+Metrics/PerceivedComplexity:
+  Max: 42
+
+Naming/PredicateName:
+  Enabled: true
+  ForbiddenPrefixes: is_
+
+Naming/VariableNumber:
+  Enabled: true
+
+RSpec/AnyInstance:
+  Enabled: false
+
+RSpec/DescribeClass:
+  Enabled: false
+
+RSpec/DescribedClass:
+  Enabled: false
+
+RSpec/ExampleLength:
+  Enabled: false
+
+RSpec/MultipleExpectations:
+  Enabled: false
+
+RSpec/NestedGroups:
+  Max: 4
+
+RSpec/NoExpectationExample:
+  Exclude:
+    - spec/domain/**/*
+
+RSpec/VerifiedDoubles:
+  Enabled: true
+
+Style/AccessorGrouping:
+  Enabled: true
+
+Style/ArrayCoercion:
+  Enabled: true
+
+Style/AsciiComments:
+  Enabled: false
+
+Style/BisectedAttrAccessor:
+  Enabled: true
+
+Style/BlockDelimiters:
+  Enabled: true
+
+Style/CaseLikeIf:
+  Enabled: true
+
+Style/ClassAndModuleChildren:
+  Enabled: false
+
+Style/CombinableLoops:
+  Enabled: true
+
+Style/Documentation:
+  Enabled: false
+
+Style/EmptyMethod:
+  EnforcedStyle: expanded
+
+Style/ExplicitBlockArgument:
+  Enabled: true
+
+Style/ExponentialNotation:
+  Enabled: true
+
+Style/FrozenStringLiteralComment:
+  EnforcedStyle: never
+
+Style/GlobalStdStream:
+  Enabled: true
+
+Style/GuardClause:
+  Enabled: false
+
+Style/HashAsLastArrayItem:
+  Enabled: true
+
+Style/HashEachMethods:
+  Enabled: true
+
+Style/HashLikeCase:
+  Enabled: true
+
+Style/HashTransformKeys:
+  Enabled: true
+
+Style/HashTransformValues:
+  Enabled: true
+
+Style/IfInsideElse:
+  Enabled: false
+
+Style/IfUnlessModifier:
+  Enabled: false
+
+Style/KeywordParametersOrder:
+  Enabled: true
+
+Style/Lambda:
+  EnforcedStyle: literal
+
+Style/MultilineBlockChain:
+  Enabled: false
+
+Style/NumericLiterals:
+  Enabled: false
+
+Style/OptionalBooleanParameter:
+  Enabled: true
+
+Style/RedundantAssignment:
+  Enabled: true
+
+Style/RedundantFetchBlock:
+  Enabled: true
+
+Style/RedundantFileExtensionInRequire:
+  Enabled: true
+
+Style/RedundantRegexpCharacterClass:
+  Enabled: true
+
+Style/RedundantRegexpEscape:
+  Enabled: true
+
+Style/RedundantSelfAssignment:
+  Enabled: true
+
+Style/RescueModifier:
+  Enabled: false
+
+Style/SingleArgumentDig:
+  Enabled: true
+
+Style/SlicingWithRange:
+  Enabled: true
+
+Style/SoleNestedConditional:
+  Enabled: true
+
+Style/StringConcatenation:
+  Enabled: true
+
+Style/StringLiterals:
+  EnforcedStyle: double_quotes
+
+Style/StringLiteralsInInterpolation:
+  EnforcedStyle: double_quotes
+
+Style/SymbolArray:
+  EnforcedStyle: brackets
+
+Style/TrailingCommaInArguments:
+  Enabled: true
+  EnforcedStyleForMultiline: comma
+
+Style/TrailingCommaInArrayLiteral:
+  Enabled: true
+  EnforcedStyleForMultiline: comma
+
+Style/TrailingCommaInHashLiteral:
+  Enabled: true
+  EnforcedStyleForMultiline: comma
