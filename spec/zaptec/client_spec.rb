@@ -33,6 +33,8 @@ RSpec.describe Zaptec::Client do
     end
 
     it "re-authorizes when it is expired" do
+      freeze_time
+
       token_cache = ActiveSupport::Cache::MemoryStore.new
       current_tokens = { "access_token" => "T123", "expires_at" => 2.minutes.ago.to_i }
       token_cache.write(Zaptec::Client::TOKENS_CACHE_KEY, current_tokens.to_json)
