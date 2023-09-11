@@ -33,6 +33,8 @@ RSpec.describe Zaptec::Client do
     end
 
     it "re-authorizes when it is expired" do
+      freeze_time
+
       token_cache = ActiveSupport::Cache::MemoryStore.new
       current_tokens = { "access_token" => "T123", "expires_at" => 2.minutes.ago.to_i }
       token_cache.write(Zaptec::Client::TOKENS_CACHE_KEY, current_tokens.to_json)
@@ -70,8 +72,7 @@ RSpec.describe Zaptec::Client do
       tokens = { "access_token" => "T123", "expires_at" => 1.hour.from_now.to_i }
 
       encryptor = instance_double(Zaptec::NullEncryptor)
-      allow(encryptor).to receive(:encrypt).and_return("encrypted")
-      allow(encryptor).to receive(:decrypt).and_return(tokens.to_json)
+      allow(encryptor).to receive_messages(encrypt: "encrypted", decrypt: tokens.to_json)
 
       WebMock::API
         .stub_request(:post, "https://api.zaptec.com/oauth/token")

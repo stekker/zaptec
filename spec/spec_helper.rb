@@ -1,3 +1,4 @@
+require "active_support/testing/time_helpers"
 require "stekker_zaptec"
 require "webmock"
 require "webmock/rspec"
@@ -11,6 +12,8 @@ RSpec.configure do |config|
 
   # Disable RSpec exposing methods globally on `Module` and `main`
   config.disable_monkey_patching!
+
+  config.include ActiveSupport::Testing::TimeHelpers
 
   config.before(:suite) { Time.zone_default = Time.find_zone!("UTC") }
 
