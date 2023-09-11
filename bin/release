@@ -3,8 +3,26 @@ set -euo pipefail
 IFS=$'\n\t'
 set -vx
 
+# Read major/minor/patch argument
 version="$1"
-bumped_version=$(gem bump --pretend --no-commit | awk '{ print $4 }' | tr -d '[:space:]')
-gem bump --version "$bumped_version"
+
+# Do a pretend version bump to determine what the new version should be
+bumped_version=$(gem bump "$version" --pretend --no-commit | awk '{ print $4 }' | tr -d '[:space:]')
+
+# Use ruby to get the root level directory name
+gem_name=$(ruby -e "puts File.basename(Dir.pwd)")
+
+# Update version file
+gem bump --version "$bumped_version" --no-commit
+
+# Run bundle install to ensure gem version in Gemfile is updated
 bundle install
-gem bump --version "$bumped_version" --tag --push --release
+
+# Stage Gemfile.lock and the version file
+git add Gemfile.lock "lib/$gem_name/version.rb"
+
+# Finally create the bump commit
+git commit -m "Bump $gem_name to $bumped_version"
+
+# Create a tag, push the commit and tag, and release to Rubygems
+gem bump --version "$bumped_version" --no-commit --tag --push --release
