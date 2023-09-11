@@ -67,15 +67,11 @@ Bug reports and pull requests are welcome on GitHub at https://github.com/stekke
 ## Publishing
 
 ```bash
-# Bump the gem version
-# See https://github.com/svenfuchs/gem-release#gem-bump
-gem bump --version [major|minor|patch]
-
-# Release the gem to rubygems.org
-# See https://github.com/svenfuchs/gem-release#gem-release
-gem release
-
-# Push the commit and tag to git
-git push
-git push --tags
+# - bumps the gem version to the next major, minor or patch version.
+# - creates commit for the version bump
+# - tags the commit
+# - pushes the commit and tag
+# - publishes the gem to Rubygems
+bin/release [major|minor|patch]
+# See also https://github.com/svenfuchs/gem-release#gem-bump
 ```
