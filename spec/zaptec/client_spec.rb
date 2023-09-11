@@ -70,8 +70,7 @@ RSpec.describe Zaptec::Client do
       tokens = { "access_token" => "T123", "expires_at" => 1.hour.from_now.to_i }
 
       encryptor = instance_double(Zaptec::NullEncryptor)
-      allow(encryptor).to receive(:encrypt).and_return("encrypted")
-      allow(encryptor).to receive(:decrypt).and_return(tokens.to_json)
+      allow(encryptor).to receive_messages(encrypt: "encrypted", decrypt: tokens.to_json)
 
       WebMock::API
         .stub_request(:post, "https://api.zaptec.com/oauth/token")
