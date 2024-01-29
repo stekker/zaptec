@@ -15,12 +15,16 @@ RSpec.describe Zaptec::Client do
             token_type: "Bearer",
             expires_in: 1.hour.to_i,
           }.to_json,
+          headers: { "Content-Type": "application/json" },
         )
 
       WebMock::API
         .stub_request(:get, "https://api.zaptec.com/api/chargers?Roles=3")
         .with(headers: { "Authorization" => "Bearer T123" })
-        .to_return(body: { Data: [] }.to_json)
+        .to_return(
+          body: { Data: [] }.to_json,
+          headers: { "Content-Type": "application/json" },
+        )
 
       tokens = { "access_token" => "T123", "expires_at" => 1.hour.from_now.to_i }
       token_cache = ActiveSupport::Cache::MemoryStore.new
@@ -52,12 +56,16 @@ RSpec.describe Zaptec::Client do
             token_type: "Bearer",
             expires_in: 1.hour.to_i,
           }.to_json,
+          headers: { "Content-Type": "application/json" },
         )
 
       WebMock::API
         .stub_request(:get, "https://api.zaptec.com/api/chargers?Roles=3")
         .with(headers: { "Authorization" => "Bearer T789" })
-        .to_return(body: { Data: [] }.to_json)
+        .to_return(
+          body: { Data: [] }.to_json,
+          headers: { "Content-Type": "application/json" },
+        )
 
       client = Zaptec::Client.new(username: "zap", password: "tec", token_cache:)
 
@@ -86,12 +94,16 @@ RSpec.describe Zaptec::Client do
             token_type: "Bearer",
             expires_in: 1.hour.to_i,
           }.to_json,
+          headers: { "Content-Type": "application/json" },
         )
 
       WebMock::API
         .stub_request(:get, "https://api.zaptec.com/api/chargers?Roles=3")
         .with(headers: { "Authorization" => "Bearer T123" })
-        .to_return(body: { Data: [] }.to_json)
+        .to_return(
+          body: { Data: [] }.to_json,
+          headers: { "Content-Type": "application/json" },
+        )
 
       client = Zaptec::Client.new(username: "zap", password: "tec", token_cache:, encryptor:)
 
@@ -119,6 +131,7 @@ RSpec.describe Zaptec::Client do
             token_type: "Bearer",
             expires_in: 86_399,
           }.to_json,
+          headers: { "Content-Type": "application/json" },
         )
 
       Timecop.freeze
@@ -153,7 +166,10 @@ RSpec.describe Zaptec::Client do
     it "gets the list of chargers" do
       WebMock::API
         .stub_request(:get, "https://api.zaptec.com/api/chargers?Roles=3")
-        .to_return(body: chargers_example.to_json)
+        .to_return(
+          body: chargers_example.to_json,
+          headers: { "Content-Type": "application/json" },
+        )
 
       token_cache = build_token_cache("T123")
       client = Zaptec::Client.new(username: "zap", password: "tec", token_cache:)
@@ -176,7 +192,10 @@ RSpec.describe Zaptec::Client do
     it "can fetch the state for a charger" do
       WebMock::API
         .stub_request(:get, "https://api.zaptec.com/api/chargers/123/state")
-        .to_return(body: charger_state_example.to_json)
+        .to_return(
+          body: charger_state_example.to_json,
+          headers: { "Content-Type": "application/json" },
+        )
 
       token_cache = build_token_cache("T123")
       client = Zaptec::Client.new(username: "zap", password: "tec", token_cache:)
@@ -198,7 +217,10 @@ RSpec.describe Zaptec::Client do
 
       WebMock::API
         .stub_request(:get, "https://api.zaptec.com/api/chargers/123/state")
-        .to_return(body: charger_state_example.to_json)
+        .to_return(
+          body: charger_state_example.to_json,
+          headers: { "Content-Type": "application/json" },
+        )
 
       token_cache = build_token_cache("T123")
       client = Zaptec::Client.new(username: "zap", password: "tec", token_cache:)
@@ -225,6 +247,7 @@ RSpec.describe Zaptec::Client do
             ValueAsString: "1",
           },
         ].to_json,
+        headers: { "Content-Type": "application/json" },
       )
 
     token_cache = build_token_cache("T123")
@@ -301,6 +324,7 @@ RSpec.describe Zaptec::Client do
               ]
             }
           JSON
+          headers: { "Content-Type": "application/json" },
         )
 
       token_cache = build_token_cache("T123")
@@ -386,6 +410,7 @@ RSpec.describe Zaptec::Client do
               "PropertySessionMaxStopCount": 0
             }
           JSON
+          headers: { "Content-Type": "application/json" },
         )
 
       token_cache = build_token_cache("T123")
@@ -413,6 +438,7 @@ RSpec.describe Zaptec::Client do
               "Id": "aaa13ff9-e69c-4469-bc4b-d64feb50e603"
             }
           JSON
+          headers: { "Content-Type": "application/json" },
         )
 
       token_cache = build_token_cache("T123")

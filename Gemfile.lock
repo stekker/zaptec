@@ -5,7 +5,6 @@ PATH
       activemodel
       activesupport
       faraday
-      faraday_middleware
 
 GEM
   remote: https://rubygems.org/
@@ -25,31 +24,10 @@ GEM
     crack (0.4.5)
       rexml
     diff-lcs (1.5.0)
-    faraday (1.10.3)
-      faraday-em_http (~> 1.0)
-      faraday-em_synchrony (~> 1.0)
-      faraday-excon (~> 1.1)
-      faraday-httpclient (~> 1.0)
-      faraday-multipart (~> 1.0)
-      faraday-net_http (~> 1.0)
-      faraday-net_http_persistent (~> 1.0)
-      faraday-patron (~> 1.0)
-      faraday-rack (~> 1.0)
-      faraday-retry (~> 1.0)
-      ruby2_keywords (>= 0.0.4)
-    faraday-em_http (1.0.0)
-    faraday-em_synchrony (1.0.0)
-    faraday-excon (1.1.0)
-    faraday-httpclient (1.0.1)
-    faraday-multipart (1.0.4)
-      multipart-post (~> 2)
-    faraday-net_http (1.0.1)
-    faraday-net_http_persistent (1.2.0)
-    faraday-patron (1.0.0)
-    faraday-rack (1.0.0)
-    faraday-retry (1.0.3)
-    faraday_middleware (1.2.0)
-      faraday (~> 1.0)
+    faraday (2.9.0)
+      faraday-net_http (>= 2.0, < 3.2)
+    faraday-net_http (3.1.0)
+      net-http
     gem-release (2.2.2)
     hashdiff (1.0.1)
     i18n (1.14.1)
@@ -58,7 +36,8 @@ GEM
     jwt (2.7.1)
     language_server-protocol (3.17.0.3)
     minitest (5.20.0)
-    multipart-post (2.3.0)
+    net-http (0.4.1)
+      uri
     parallel (1.23.0)
     parser (3.2.2.3)
       ast (~> 2.4.1)
@@ -110,11 +89,11 @@ GEM
       rubocop-capybara (~> 2.17)
       rubocop-factory_bot (~> 2.22)
     ruby-progressbar (1.13.0)
-    ruby2_keywords (0.0.5)
     timecop (0.9.8)
     tzinfo (2.0.6)
       concurrent-ruby (~> 1.0)
     unicode-display_width (2.4.2)
+    uri (0.13.0)
     webmock (3.19.1)
       addressable (>= 2.8.0)
       crack (>= 0.3.2)
