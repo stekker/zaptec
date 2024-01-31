@@ -146,6 +146,8 @@ module Zaptec
 
         retry
       end
+    rescue Faraday::ForbiddenError => e
+      raise Errors::Forbidden, "Access denied to charger"
     rescue Faraday::Error => e
       raise Errors::RequestFailed.new("Request returned status #{e.response_status}", e.response)
     end
