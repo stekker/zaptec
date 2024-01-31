@@ -233,6 +233,20 @@ RSpec.describe Zaptec::Client do
           timestamp: Time.zone.now,
         )
     end
+
+    it "raises a Forbidden error when we have no access to the charger (anymore)" do
+      WebMock::API
+        .stub_request(:get, "https://api.zaptec.com/api/chargers/123/state")
+        .to_return(
+          status: 403,
+        )
+
+      token_cache = build_token_cache("T123")
+      client = Zaptec::Client.new(username: "zap", password: "tec", token_cache:)
+      device_type_apollo = 4
+
+      expect { client.state("123", device_type_apollo) }.to raise_error(Zaptec::Errors::Forbidden)
+    end
   end
 
   it "does not raise an error for unknown states" do
