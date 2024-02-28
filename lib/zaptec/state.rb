@@ -1,7 +1,9 @@
 module Zaptec
   class State
-    CHARGING_MODES = %w[Connected_Requesting Connected_Charging].freeze
+    CONNECTED_REQUESTING = "Connected_Requesting".freeze
+    CONNECTED_CHARGING = "Connected_Charging".freeze
     DISCONNECTED = "Disconnected".freeze
+    CHARGING_MODES = [CONNECTED_CHARGING, CONNECTED_REQUESTING].freeze
 
     def initialize(data)
       @data = data
@@ -20,6 +22,8 @@ module Zaptec
     def online? = @data.fetch(:IsOnline).to_i.positive?
 
     def meter_reading
+      return unless charger_operation_mode == CONNECTED_CHARGING
+
       @meter_reading ||= MeterReading.new(reading_kwh: total_charge_power, timestamp: Time.zone.now)
     end
 

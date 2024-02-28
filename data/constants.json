@@ -1,6 +1,10 @@
 {
   "Languages": [
     {
+      "Key": "dk",
+      "Name": "Danish"
+    },
+    {
       "Key": "nl",
       "Name": "Dutch"
     },
@@ -50,11 +54,11 @@
     }
   ],
   "Countries": {
-    "d6267571-6cf4-4061-92d8-f9d55a4f3a40": {
-      "Id": "d6267571-6cf4-4061-92d8-f9d55a4f3a40",
+    "d475da45-5b86-42ed-86e5-f30035e16da1": {
+      "Id": "d475da45-5b86-42ed-86e5-f30035e16da1",
       "Code": "AUT",
       "Name": "Austria",
-      "TimeZoneName": "(UTC+01:00) Central European Time (Berlin)"
+      "TimeZoneName": "(UTC+01:00) Central European Time (Vienna)"
     },
     "3073c0bd-9f5c-4f18-80dd-a7b163beb3fe": {
       "Id": "3073c0bd-9f5c-4f18-80dd-a7b163beb3fe",
@@ -68,11 +72,23 @@
       "Name": "Croatia",
       "TimeZoneName": "(UTC+01:00) Central European Time (Warsaw)"
     },
+    "06c1cbd3-66d3-48e3-8ca1-9d427400689c": {
+      "Id": "06c1cbd3-66d3-48e3-8ca1-9d427400689c",
+      "Code": "CZE",
+      "Name": "Czech Republic",
+      "TimeZoneName": "(UTC+01:00) Central European Time (Prague)"
+    },
     "52f1e37e-f314-4d48-8a6a-82c74e4830a1": {
       "Id": "52f1e37e-f314-4d48-8a6a-82c74e4830a1",
       "Code": "DNK",
       "Name": "Denmark",
       "TimeZoneName": "(UTC+01:00) Central European Time (Berlin)"
+    },
+    "0047a9bd-adea-4272-9708-3354dee0bd8c": {
+      "Id": "0047a9bd-adea-4272-9708-3354dee0bd8c",
+      "Code": "EST",
+      "Name": "Estonia",
+      "TimeZoneName": "(UTC+02:00) Eastern European Time (Tallinn)"
     },
     "42ec863c-edb5-46b0-afeb-36f66fa7eebf": {
       "Id": "42ec863c-edb5-46b0-afeb-36f66fa7eebf",
@@ -92,6 +108,18 @@
       "Name": "Germany",
       "TimeZoneName": "(UTC+01:00) Central European Time (Berlin)"
     },
+    "24c5afbe-2446-482e-b78d-a9494f8118d5": {
+      "Id": "24c5afbe-2446-482e-b78d-a9494f8118d5",
+      "Code": "GRC",
+      "Name": "Greece",
+      "TimeZoneName": "(UTC+02:00) Eastern European Time (Athens)"
+    },
+    "1aef14ea-054d-45f7-91c5-9e1b19762a95": {
+      "Id": "1aef14ea-054d-45f7-91c5-9e1b19762a95",
+      "Code": "HUN",
+      "Name": "Hungary",
+      "TimeZoneName": "(UTC+01:00) Central European Time (Budapest)"
+    },
     "a0e21e29-474f-466a-9a2f-3a17458465d8": {
       "Id": "a0e21e29-474f-466a-9a2f-3a17458465d8",
       "Code": "ISL",
@@ -109,6 +137,24 @@
       "Code": "ITA",
       "Name": "Italy",
       "TimeZoneName": "(UTC+01:00) Central European Time (Berlin)"
+    },
+    "51f14b70-8cfb-4f43-b389-a4966e225ddd": {
+      "Id": "51f14b70-8cfb-4f43-b389-a4966e225ddd",
+      "Code": "LVA",
+      "Name": "Latvia",
+      "TimeZoneName": "(UTC+02:00) Eastern European Time (Riga)"
+    },
+    "8022f9e8-d2a7-4446-a248-bcb25ce6d0e2": {
+      "Id": "8022f9e8-d2a7-4446-a248-bcb25ce6d0e2",
+      "Code": "LTU",
+      "Name": "Lithuania",
+      "TimeZoneName": "(UTC+02:00) Eastern European Time (Vilnius)"
+    },
+    "d7158bfc-ab96-4b85-88fb-26740ab8f17c": {
+      "Id": "d7158bfc-ab96-4b85-88fb-26740ab8f17c",
+      "Code": "LUX",
+      "Name": "Luxembourg",
+      "TimeZoneName": "(UTC+01:00) Central European Time (Warsaw)"
     },
     "bda681ab-adcb-4f67-bac5-5cbf28d42cc7": {
       "Id": "bda681ab-adcb-4f67-bac5-5cbf28d42cc7",
@@ -134,6 +180,24 @@
       "Name": "Portugal",
       "TimeZoneName": "(UTC+00:00) United Kingdom Time"
     },
+    "0b252d8d-18bc-4dbb-9eca-953371586455": {
+      "Id": "0b252d8d-18bc-4dbb-9eca-953371586455",
+      "Code": "ROU",
+      "Name": "Romania",
+      "TimeZoneName": "(UTC+02:00) Eastern European Time (Bucharest)"
+    },
+    "2d3debcc-17e9-4e12-8802-4cd04e778655": {
+      "Id": "2d3debcc-17e9-4e12-8802-4cd04e778655",
+      "Code": "SVK",
+      "Name": "Slovakia",
+      "TimeZoneName": "(UTC+01:00) Central European Time (Bratislava)"
+    },
+    "514f0414-a993-4759-a3e8-db7b83633bfa": {
+      "Id": "514f0414-a993-4759-a3e8-db7b83633bfa",
+      "Code": "SVN",
+      "Name": "Slovenia",
+      "TimeZoneName": "(UTC+01:00) Central European Time (Ljubljana)"
+    },
     "5456f813-850b-418f-9eef-1225e66302d2": {
       "Id": "5456f813-850b-418f-9eef-1225e66302d2",
       "Code": "ESP",
@@ -157,6 +221,12 @@
       "Code": "THA",
       "Name": "Thailand",
       "TimeZoneName": "(UTC+07:00) Indochina Time (Bangkok)"
+    },
+    "d251fa3a-078a-4c98-a254-0d65cdecc578": {
+      "Id": "d251fa3a-078a-4c98-a254-0d65cdecc578",
+      "Code": "TUR",
+      "Name": "Turkey",
+      "TimeZoneName": "(UTC+03:00) Türkiye Time"
     },
     "f743b0d4-1f38-43e8-a95d-cf18fe1c3ede": {
       "Id": "f743b0d4-1f38-43e8-a95d-cf18fe1c3ede",
@@ -197,6 +267,13 @@
       "MaxCircuitCurrent": 32.0,
       "MaxChargers": 3,
       "DefaultFeatures": 471,
+      "DefaultRoute": "default"
+    },
+    "OcppNative": {
+      "Id": 2,
+      "Name": "OcppNative",
+      "MaxChargers": 3,
+      "DefaultFeatures": 577,
       "DefaultRoute": "default"
     }
   },
@@ -312,7 +389,8 @@
     "OperationFailedDueToChargerState": 538,
     "InstallationConstraintViolation": 539,
     "UnknownInstallationId": 540,
-    "UnknownEnergySensorId": 541
+    "UnknownEnergySensorId": 541,
+    "UnauthorizedToPerformOcppNativeChanges": 542
   },
   "Settings": {
     "AuthenticationRequired": 120,
@@ -345,7 +423,8 @@
     "DiagnosticsMode": 805,
     "DisableBLEChargePointName": 806,
     "InternalDiagnosticsLog": 807,
-    "UnconditionalNfcDetectionIndication": 855
+    "UnconditionalNfcDetectionIndication": 855,
+    "EnableLteDetailedSignalStrength": 856
   },
   "Commands": {
     "Unknown": 0,
@@ -377,6 +456,7 @@
     "ShowGranted": 601,
     "ShowDenied": 602,
     "IndicateAppConnect": 603,
+    "RequestSignedMIDEventLog": 700,
     "ConfirmChargeCardAdded": 750,
     "SetAuthenticationList": 751,
     "Debug": 800,
@@ -396,6 +476,9 @@
   "Observations": {
     "Unknown": 0,
     "OfflineMode": 1,
+    "Capabilities": 100,
+    "ProductName": 110,
+    "ArenaId": 111,
     "AuthenticationRequired": 120,
     "PaymentActive": 130,
     "PaymentCurrency": 131,
@@ -415,8 +498,10 @@
     "TemperatureInternal5": 201,
     "TemperatureInternal6": 202,
     "TemperatureInternalLimit": 203,
+    "TemperaturePowerBoard": 205,
     "TemperatureInternalMaxLimit": 241,
     "Humidity": 270,
+    "TamperCover": 280,
     "VoltagePhase1": 501,
     "VoltagePhase2": 502,
     "VoltagePhase3": 503,
@@ -436,6 +521,7 @@
     "ChargerOfflineCurrent": 523,
     "RcdCalibration": 540,
     "RcdCalibrationNoise": 541,
+    "ManualRcdTest": 542,
     "TotalChargePowerSession": 553,
     "SignedMeterValue": 554,
     "SignedMeterValueInterval": 555,
@@ -463,6 +549,7 @@
     "SessionIdentifier": 721,
     "ChargerCurrentUserUuid": 722,
     "CompletedSession": 723,
+    "PlugAndChargeAuthorizeRequest": 724,
     "NewChargeCard": 750,
     "AuthenticationListVersion": 751,
     "EnabledNfcTechnologies": 752,
@@ -487,12 +574,15 @@
     "VarisciteToMcuPacketErrors": 814,
     "UptimeVariscite": 820,
     "UptimeMCU": 821,
+    "CertificateVersion": 823,
+    "SecurityLog": 830,
     "CarSessionLog": 850,
     "CommunicationModeConfigurationInconsistency": 851,
     "RawPilotMonitor": 852,
     "IT3PhaseDiagnosticsLog": 853,
     "PilotTestResults": 854,
     "UnconditionalNfcDetectionIndication": 855,
+    "EnableLteDetailedSignalStrength": 856,
     "EmcTestCounter": 899,
     "ProductionTestResults": 900,
     "PostProductionTestResults": 901,
@@ -501,6 +591,7 @@
     "SmartComputerSoftwareApplicationVersion": 911,
     "SmartComputerSoftwareBootloaderVersion": 912,
     "SmartComputerHardwareVersion": 913,
+    "MIDLegallyRelevantSoftwareIdentifier": 914,
     "MacMain": 950,
     "MacPlcModuleGrid": 951,
     "MacWiFi": 952,
@@ -509,8 +600,12 @@
     "LteMsisdn": 961,
     "LteIccid": 962,
     "LteImei": 963,
+    "LteVersion": 964,
+    "LteDetailedSignalStrength": 965,
     "ProductionTestStationNumber": 970,
     "MIDCalibration": 980,
+    "MIDPublicKey": 981,
+    "MIDCalibrationID": 982,
     "IsOcppConnected": -3,
     "IsOnline": -2,
     "Pulse": -1
@@ -521,6 +616,9 @@
       "ObservationIds": {
         "Unknown": 0,
         "OfflineMode": 1,
+        "Capabilities": 100,
+        "ProductName": 110,
+        "ArenaId": 111,
         "AuthenticationRequired": 120,
         "PaymentActive": 130,
         "PaymentCurrency": 131,
@@ -540,8 +638,10 @@
         "TemperatureInternal5": 201,
         "TemperatureInternal6": 202,
         "TemperatureInternalLimit": 203,
+        "TemperaturePowerBoard": 205,
         "TemperatureInternalMaxLimit": 241,
         "Humidity": 270,
+        "TamperCover": 280,
         "VoltagePhase1": 501,
         "VoltagePhase2": 502,
         "VoltagePhase3": 503,
@@ -561,6 +661,7 @@
         "ChargerOfflineCurrent": 523,
         "RcdCalibration": 540,
         "RcdCalibrationNoise": 541,
+        "ManualRcdTest": 542,
         "TotalChargePowerSession": 553,
         "SignedMeterValue": 554,
         "SignedMeterValueInterval": 555,
@@ -588,6 +689,7 @@
         "SessionIdentifier": 721,
         "ChargerCurrentUserUuid": 722,
         "CompletedSession": 723,
+        "PlugAndChargeAuthorizeRequest": 724,
         "NewChargeCard": 750,
         "AuthenticationListVersion": 751,
         "EnabledNfcTechnologies": 752,
@@ -612,12 +714,15 @@
         "VarisciteToMcuPacketErrors": 814,
         "UptimeVariscite": 820,
         "UptimeMCU": 821,
+        "CertificateVersion": 823,
+        "SecurityLog": 830,
         "CarSessionLog": 850,
         "CommunicationModeConfigurationInconsistency": 851,
         "RawPilotMonitor": 852,
         "IT3PhaseDiagnosticsLog": 853,
         "PilotTestResults": 854,
         "UnconditionalNfcDetectionIndication": 855,
+        "EnableLteDetailedSignalStrength": 856,
         "EmcTestCounter": 899,
         "ProductionTestResults": 900,
         "PostProductionTestResults": 901,
@@ -626,6 +731,7 @@
         "SmartComputerSoftwareApplicationVersion": 911,
         "SmartComputerSoftwareBootloaderVersion": 912,
         "SmartComputerHardwareVersion": 913,
+        "MIDLegallyRelevantSoftwareIdentifier": 914,
         "MacMain": 950,
         "MacPlcModuleGrid": 951,
         "MacWiFi": 952,
@@ -634,8 +740,12 @@
         "LteMsisdn": 961,
         "LteIccid": 962,
         "LteImei": 963,
+        "LteVersion": 964,
+        "LteDetailedSignalStrength": 965,
         "ProductionTestStationNumber": 970,
         "MIDCalibration": 980,
+        "MIDPublicKey": 981,
+        "MIDCalibrationID": 982,
         "IsOcppConnected": -3,
         "IsOnline": -2,
         "Pulse": -1
@@ -670,6 +780,7 @@
         "ShowGranted": 601,
         "ShowDenied": 602,
         "IndicateAppConnect": 603,
+        "RequestSignedMIDEventLog": 700,
         "ConfirmChargeCardAdded": 750,
         "SetAuthenticationList": 751,
         "Debug": 800,
@@ -717,7 +828,8 @@
         "DiagnosticsMode": 805,
         "DisableBLEChargePointName": 806,
         "InternalDiagnosticsLog": 807,
-        "UnconditionalNfcDetectionIndication": 855
+        "UnconditionalNfcDetectionIndication": 855,
+        "EnableLteDetailedSignalStrength": 856
       },
       "Warnings": {
         "None": 0,
@@ -755,13 +867,15 @@
         "VARISCITE": 2147483648,
         "MCU_BOOTLOADER": 4294967296,
         "FPGA_INIT_FAILED": 8589934592,
-        "ILLEGAL_PHASE": 17179869184
+        "ILLEGAL_PHASE": 17179869184,
+        "MID_STORAGE_ERROR": 34359738368
       }
     },
     "Apollo": {
       "DeviceType": 4,
       "ObservationIds": {
         "Unknown": 0,
+        "Capabilities": 100,
         "AuthenticationRequired": 120,
         "PaymentActive": 130,
         "PaymentCurrency": 131,
@@ -784,6 +898,7 @@
         "TemperatureTM2": 207,
         "TemperatureInternalMaxLimit": 241,
         "Humidity": 270,
+        "TamperCover": 280,
         "VoltagePhase1": 501,
         "VoltagePhase2": 502,
         "VoltagePhase3": 503,
@@ -860,10 +975,18 @@
         "UptimeMCU": 821,
         "DataUsage": 822,
         "CertificateVersion": 823,
+        "SecurityLog": 830,
         "CarSessionLog": 850,
         "CommunicationModeConfigurationInconsistency": 851,
         "RawPilotMonitor": 852,
         "IT3PhaseDiagnosticsLog": 853,
+        "SessionController": 860,
+        "OcppNativeUrl": 861,
+        "OcppNativeCbId": 862,
+        "OcppNativeAuthorizationKey": 863,
+        "OcppNativeAuthorizationKeyFromZaptec": 864,
+        "OcppNativeSecurityProfile": 865,
+        "OcppNativeConnected": 866,
         "ProductionTestResults": 900,
         "PostProductionTestResults": 901,
         "SmartMainboardSoftwareApplicationVersion": 908,
@@ -940,7 +1063,12 @@
         "ChargePointName": 802,
         "DiagnosticsMode": 805,
         "DisableBLEChargePointName": 806,
-        "InternalDiagnosticsLog": 807
+        "InternalDiagnosticsLog": 807,
+        "SessionController": 860,
+        "OcppNativeUrl": 861,
+        "OcppNativeCbId": 862,
+        "OcppNativeAuthorizationKey": 863,
+        "OcppNativeAuthorizationKeyFromZaptec": 864
       },
       "Warnings": {
         "None": 0,
@@ -1066,7 +1194,7 @@
     "InvitedUser": 7,
     "Country": 8
   },
-  "Version": "6.5.8.75738733",
+  "Version": "6.5.8.0",
   "SmartWarnings": {
     "WARNING_OK": 0,
     "WARNING_HUMIDITY": 1,
@@ -1180,6 +1308,7 @@
     "Connectivity_4G": 64,
     "Authentication_Ocpp": 128,
     "PowerManagement_Apm_Tariff_PowerLimit": 256,
+    "Authentication_OcppNative": 512,
     "LoadBalacing": 32768
   },
   "InstallationTypeConstraints": {
@@ -1198,7 +1327,8 @@
     "StoppedByRFID": 8,
     "Signed": 16,
     "Void": 32,
-    "Aborted": 64
+    "Aborted": 64,
+    "OcppNative": 128
   },
   "InstallationUpdateStatusCodes": {
     "Ok": 0,
@@ -1238,7 +1368,9 @@
       "SE4": 9,
       "DK1": 10,
       "DK2": 11,
-      "FI": 12
+      "FI": 12,
+      "NL": 13,
+      "BE": 14
     },
     "PriceUnit": {
       "Unsupported": 0,
@@ -1247,9 +1379,12 @@
     "CountryDeliveryAreas": {
       "53215e81-d4a1-48ab-bfa3-001934b71734": [],
       "8e2a76e1-2f43-46bc-9319-0a77b12182e6": [],
+      "d251fa3a-078a-4c98-a254-0d65cdecc578": [],
       "5456f813-850b-418f-9eef-1225e66302d2": [],
       "04918e62-f761-4ef2-8923-1483fa9fdd05": [],
       "758c174f-d840-4b80-a408-1d46ce2b7e05": [],
+      "d7158bfc-ab96-4b85-88fb-26740ab8f17c": [],
+      "0047a9bd-adea-4272-9708-3354dee0bd8c": [],
       "42ec863c-edb5-46b0-afeb-36f66fa7eebf": [
         12
       ],
@@ -1262,14 +1397,25 @@
       "a0e21e29-474f-466a-9a2f-3a17458465d8": [],
       "c66b0918-9e65-4dd4-9b6c-47f989538e6d": [],
       "a33ba41a-16e4-4b00-a2a1-4934d89c3a1c": [],
-      "bda681ab-adcb-4f67-bac5-5cbf28d42cc7": [],
+      "2d3debcc-17e9-4e12-8802-4cd04e778655": [],
+      "bda681ab-adcb-4f67-bac5-5cbf28d42cc7": [
+        13
+      ],
       "52f1e37e-f314-4d48-8a6a-82c74e4830a1": [
         10,
         11
       ],
       "fb894235-7a19-4fe0-b6a1-8b9c9ceb9e4e": [],
-      "3073c0bd-9f5c-4f18-80dd-a7b163beb3fe": [],
+      "0b252d8d-18bc-4dbb-9eca-953371586455": [],
+      "06c1cbd3-66d3-48e3-8ca1-9d427400689c": [],
+      "1aef14ea-054d-45f7-91c5-9e1b19762a95": [],
+      "51f14b70-8cfb-4f43-b389-a4966e225ddd": [],
+      "3073c0bd-9f5c-4f18-80dd-a7b163beb3fe": [
+        14
+      ],
+      "24c5afbe-2446-482e-b78d-a9494f8118d5": [],
       "3705d443-31df-4633-8bf4-b8379c82a5cb": [],
+      "8022f9e8-d2a7-4446-a248-bcb25ce6d0e2": [],
       "83bffdb1-0a92-4574-bb7b-bd0d17387c17": [
         1,
         2,
@@ -1278,12 +1424,15 @@
         5
       ],
       "f743b0d4-1f38-43e8-a95d-cf18fe1c3ede": [],
-      "2365ed9c-8a79-44b5-9bf8-f7a2cf42fb44": [],
-      "d6267571-6cf4-4061-92d8-f9d55a4f3a40": []
+      "514f0414-a993-4759-a3e8-db7b83633bfa": [],
+      "d475da45-5b86-42ed-86e5-f30035e16da1": [],
+      "2365ed9c-8a79-44b5-9bf8-f7a2cf42fb44": []
     }
   },
   "UserActionTypes": {
-    "AddSense": 1
+    "None": 0,
+    "AddSense": 1,
+    "InviteNewUser": 2
   },
   "OcppCloudUrlVersions": {
     "Legacy": 0,

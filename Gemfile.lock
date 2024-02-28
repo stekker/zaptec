@@ -20,6 +20,7 @@ GEM
       public_suffix (>= 2.0.2, < 6.0)
     ast (2.4.2)
     base64 (0.1.1)
+    byebug (11.1.3)
     concurrent-ruby (1.2.2)
     crack (0.4.5)
       rexml
@@ -103,10 +104,12 @@ PLATFORMS
   arm64-darwin-20
   arm64-darwin-21
   arm64-darwin-22
+  arm64-darwin-23
   x86_64-darwin-21
   x86_64-linux
 
 DEPENDENCIES
+  byebug
   gem-release (~> 2.2)
   jwt (~> 2.6)
   rake (~> 13.0)
