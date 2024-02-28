@@ -200,8 +200,9 @@ RSpec.describe Zaptec::Client do
       token_cache = build_token_cache("T123")
       client = Zaptec::Client.new(username: "zap", password: "tec", token_cache:)
       device_type_apollo = 4
+      state = client.state("123", device_type_apollo)
 
-      expect(client.state("123", device_type_apollo))
+      expect(state)
         .to have_attributes(
           total_charge_power: 2.83012,
           max_phases: 3,
@@ -218,7 +219,7 @@ RSpec.describe Zaptec::Client do
       WebMock::API
         .stub_request(:get, "https://api.zaptec.com/api/chargers/123/state")
         .to_return(
-          body: charger_state_example.to_json,
+          body: charger_state_example(charger_operation_mode: :Connected_Charging).to_json,
           headers: { "Content-Type": "application/json" },
         )
 
@@ -232,6 +233,41 @@ RSpec.describe Zaptec::Client do
           reading_kwh: 2.83012,
           timestamp: Time.zone.now,
         )
+    end
+
+    # As soon as the ChargerOperationMode changes from Connected_Charging to Connected_Finished
+    # TotalChargePower is reset to 0 and thus not usable for meter readings.
+    it "omits the meter reading when the charger finished charging (Connected_Finished)" do
+      WebMock::API
+        .stub_request(:get, "https://api.zaptec.com/api/chargers/123/state")
+        .to_return(
+          body: charger_state_example(charger_operation_mode: :Connected_Finished).to_json,
+          headers: { "Content-Type": "application/json" },
+        )
+
+      token_cache = build_token_cache("T123")
+      client = Zaptec::Client.new(username: "zap", password: "tec", token_cache:)
+      device_type_apollo = 4
+      state = client.state("123", device_type_apollo)
+
+      expect(state.meter_reading).to be_nil
+    end
+
+    # We assume TotalChargePower is not yet populated when ChargerOperationMode is Connected_Requesting
+    it "omits the meter reading when the charger prepares for charging (Connected_Requesting)" do
+      WebMock::API
+        .stub_request(:get, "https://api.zaptec.com/api/chargers/123/state")
+        .to_return(
+          body: charger_state_example(charger_operation_mode: :Connected_Requesting).to_json,
+          headers: { "Content-Type": "application/json" },
+        )
+
+      token_cache = build_token_cache("T123")
+      client = Zaptec::Client.new(username: "zap", password: "tec", token_cache:)
+      device_type_apollo = 4
+      state = client.state("123", device_type_apollo)
+
+      expect(state.meter_reading).to be_nil
     end
 
     it "raises a Forbidden error when we have no access to the charger (anymore)" do
@@ -502,7 +538,9 @@ RSpec.describe Zaptec::Client do
     }
   end
 
-  def charger_state_example
+  def charger_state_example(charger_operation_mode: :Disconnected)
+    charger_operation_mode_id = Zaptec::Constants.charger_operation_mode_name_to_mode(charger_operation_mode)
+
     [
       {
         ChargerId: "93d603a7-ff53-4ed8-8dd6-f79c94819458",
@@ -759,7 +797,7 @@ RSpec.describe Zaptec::Client do
         ChargerId: "93d603a7-ff53-4ed8-8dd6-f79c94819458",
         StateId: 710,
         Timestamp: "2022-10-05T08:28:17.433",
-        ValueAsString: "1",
+        ValueAsString: charger_operation_mode_id.to_s,
       },
       {
         ChargerId: "93d603a7-ff53-4ed8-8dd6-f79c94819458",

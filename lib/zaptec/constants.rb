@@ -15,6 +15,13 @@ module Zaptec
           .then { |name, _mode| name }
       end
 
+      def charger_operation_mode_name_to_mode(operation_mode_name)
+        constants
+          .fetch("ChargerOperationModes")
+          .detect { |name, _mode| name == operation_mode_name.to_s }
+          .then { |_name, mode| mode }
+      end
+
       def command_to_command_id(command)
         constants
           .fetch("Commands")
