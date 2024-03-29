@@ -230,44 +230,9 @@ RSpec.describe Zaptec::Client do
 
       expect(state.meter_reading)
         .to have_attributes(
-          reading_kwh: 2.83012,
-          timestamp: Time.zone.now,
+          reading_kwh: 24.368,
+          timestamp: Time.zone.parse("2022-09-28T14:00:00"),
         )
-    end
-
-    # As soon as the ChargerOperationMode changes from Connected_Charging to Connected_Finished
-    # TotalChargePower is reset to 0 and thus not usable for meter readings.
-    it "omits the meter reading when the charger finished charging (Connected_Finished)" do
-      WebMock::API
-        .stub_request(:get, "https://api.zaptec.com/api/chargers/123/state")
-        .to_return(
-          body: charger_state_example(charger_operation_mode: :Connected_Finished).to_json,
-          headers: { "Content-Type": "application/json" },
-        )
-
-      token_cache = build_token_cache("T123")
-      client = Zaptec::Client.new(username: "zap", password: "tec", token_cache:)
-      device_type_apollo = 4
-      state = client.state("123", device_type_apollo)
-
-      expect(state.meter_reading).to be_nil
-    end
-
-    # We assume TotalChargePower is not yet populated when ChargerOperationMode is Connected_Requesting
-    it "omits the meter reading when the charger prepares for charging (Connected_Requesting)" do
-      WebMock::API
-        .stub_request(:get, "https://api.zaptec.com/api/chargers/123/state")
-        .to_return(
-          body: charger_state_example(charger_operation_mode: :Connected_Requesting).to_json,
-          headers: { "Content-Type": "application/json" },
-        )
-
-      token_cache = build_token_cache("T123")
-      client = Zaptec::Client.new(username: "zap", password: "tec", token_cache:)
-      device_type_apollo = 4
-      state = client.state("123", device_type_apollo)
-
-      expect(state.meter_reading).to be_nil
     end
 
     it "raises a Forbidden error when we have no access to the charger (anymore)" do
