@@ -1,3 +1,4 @@
+require "active_support/all"
 require "active_support/testing/time_helpers"
 require "byebug"
 require "stekker_zaptec"

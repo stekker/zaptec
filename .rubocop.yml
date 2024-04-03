@@ -3,6 +3,7 @@ require:
 
 AllCops:
   NewCops: enable
+  TargetRubyVersion: "3.2.1"
 
 Layout/BeginEndAlignment:
   Enabled: true
