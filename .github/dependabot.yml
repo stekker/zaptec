@@ -1,0 +1,22 @@
+version: 2
+updates:
+  - package-ecosystem: bundler
+    directory: "/"
+    schedule:
+      day: "monday"
+      interval: weekly
+      time: "09:00"
+      timezone: "Europe/Amsterdam"
+    open-pull-requests-limit: 999
+    allow:
+      - dependency-type: direct
+  - package-ecosystem: github-actions
+    directory: "/"
+    schedule:
+      day: "monday"
+      interval: weekly
+      time: "09:00"
+      timezone: "Europe/Amsterdam"
+    open-pull-requests-limit: 999
+    allow:
+      - dependency-type: direct
