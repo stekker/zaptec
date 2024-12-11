@@ -94,6 +94,8 @@ module Zaptec
 
     def resume_charging(charger_id) = send_command(charger_id, :ResumeCharging)
 
+    def deauthorize_and_stop(charger_id) = send_command(charger_id, :DeauthorizeAndStop)
+
     private
 
     attr_reader :username, :password
