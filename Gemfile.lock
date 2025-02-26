@@ -59,7 +59,7 @@ GEM
       racc
     public_suffix (5.0.5)
     racc (1.7.3)
-    rack (3.0.10)
+    rack (3.1.10)
     rainbow (3.1.1)
     rake (13.2.0)
     regexp_parser (2.9.0)
@@ -139,4 +139,4 @@ DEPENDENCIES
   webmock (~> 3.18)
 
 BUNDLED WITH
-   2.2.22
+   2.6.2
