@@ -25,10 +25,10 @@ module Zaptec
       @encryptor = encryptor
     end
 
-    # https://zendesk.zaptec.com/hc/en-001/articles/6062673456657-Access-to-Installations-Authentication-for-Third-Parties#lookup-key-0-0
+    # https://docs.zaptec.com/docs/step-by-step-flow-granting-third-party-access-to-user-installations-via-lookup-key
     def grant_access_url(lookup_key:, partner_name:, redirect_url: nil, language: "en")
       query = URI.encode_www_form(partnerName: partner_name, returnUrl: redirect_url, lang: language)
-      "https://portal.zaptec.com/#!/access/request/#{lookup_key}?#{query}"
+      "https://portal.zaptec.com/access/request/#{lookup_key}?#{query}"
     end
 
     # https://zaptec.com/downloads/ZapChargerPro_Integration.pdf
@@ -88,6 +88,11 @@ module Zaptec
           ]
         end
         .then { |data| State.new(data) }
+    end
+
+    # https://api.zaptec.com/help/index.html#/Installation/post_api_installation__id__update
+    def update_installation(installation_id, **attributes)
+      post("/api/installation/#{installation_id}/update", body: attributes)
     end
 
     def pause_charging(charger_id) = send_command(charger_id, :StopChargingFinal)
