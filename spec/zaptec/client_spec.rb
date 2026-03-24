@@ -317,14 +317,14 @@ RSpec.describe Zaptec::Client do
       token_cache = build_token_cache("T123")
       client = Zaptec::Client.new(username: "zap", password: "tec", token_cache:)
 
-      expect {
+      expect do
         client.update_installation(
           "I123",
           AvailableCurrentPhase1: 10,
           AvailableCurrentPhase2: 10,
           AvailableCurrentPhase3: 10,
         )
-      }.not_to raise_error
+      end.not_to raise_error
     end
 
     it "raises a RequestFailed error when the request fails" do
@@ -336,6 +336,33 @@ RSpec.describe Zaptec::Client do
       client = Zaptec::Client.new(username: "zap", password: "tec", token_cache:)
 
       expect { client.update_installation("I123", AvailableCurrentPhase1: 10) }
+        .to raise_error(Zaptec::Errors::RequestFailed, "Request returned status 500")
+    end
+  end
+
+  describe "#update_charger" do
+    it "posts charge current settings to the charger" do
+      WebMock::API
+        .stub_request(:post, "https://api.zaptec.com/api/chargers/C123/update")
+        .with(body: { MaxChargeCurrent: 10 })
+        .to_return(status: 200)
+
+      token_cache = build_token_cache("T123")
+      client = Zaptec::Client.new(username: "zap", password: "tec", token_cache:)
+
+      expect { client.update_charger("C123", MaxChargeCurrent: 10) }
+        .not_to raise_error
+    end
+
+    it "raises a RequestFailed error when the request fails" do
+      WebMock::API
+        .stub_request(:post, "https://api.zaptec.com/api/chargers/C123/update")
+        .to_return(status: 500)
+
+      token_cache = build_token_cache("T123")
+      client = Zaptec::Client.new(username: "zap", password: "tec", token_cache:)
+
+      expect { client.update_charger("C123", MaxChargeCurrent: 10) }
         .to raise_error(Zaptec::Errors::RequestFailed, "Request returned status 500")
     end
   end

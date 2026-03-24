@@ -95,6 +95,11 @@ module Zaptec
       post("/api/installation/#{installation_id}/update", body: attributes)
     end
 
+    # https://api.zaptec.com/help/index.html#/Charger/post_api_chargers__id__update
+    def update_charger(charger_id, **attributes)
+      post("/api/chargers/#{charger_id}/update", body: attributes)
+    end
+
     def pause_charging(charger_id) = send_command(charger_id, :StopChargingFinal)
 
     def resume_charging(charger_id) = send_command(charger_id, :ResumeCharging)
