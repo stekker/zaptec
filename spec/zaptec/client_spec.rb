@@ -305,6 +305,41 @@ RSpec.describe Zaptec::Client do
     end
   end
 
+  describe "#update_installation" do
+    it "posts available current settings to the installation" do
+      WebMock::API
+        .stub_request(:post, "https://api.zaptec.com/api/installation/I123/update")
+        .with(
+          body: { AvailableCurrentPhase1: 10, AvailableCurrentPhase2: 10, AvailableCurrentPhase3: 10 },
+        )
+        .to_return(status: 200)
+
+      token_cache = build_token_cache("T123")
+      client = Zaptec::Client.new(username: "zap", password: "tec", token_cache:)
+
+      expect {
+        client.update_installation(
+          "I123",
+          AvailableCurrentPhase1: 10,
+          AvailableCurrentPhase2: 10,
+          AvailableCurrentPhase3: 10,
+        )
+      }.not_to raise_error
+    end
+
+    it "raises a RequestFailed error when the request fails" do
+      WebMock::API
+        .stub_request(:post, "https://api.zaptec.com/api/installation/I123/update")
+        .to_return(status: 500)
+
+      token_cache = build_token_cache("T123")
+      client = Zaptec::Client.new(username: "zap", password: "tec", token_cache:)
+
+      expect { client.update_installation("I123", AvailableCurrentPhase1: 10) }
+        .to raise_error(Zaptec::Errors::RequestFailed, "Request returned status 500")
+    end
+  end
+
   describe "#get_installation_hierarchy" do
     it "fetches the hierarchy for an installation" do
       WebMock::API
