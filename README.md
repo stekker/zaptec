@@ -1,63 +1,87 @@
-# Connect to the Zaptec API
+# Zaptec
 
-## How to use this without any technical knowledge
-
-With this gem, you can connect to Zaptec chargers to smart charge your vehicle.
-
-However, for an even more seamless experience, we recommend using
-the [Stekker app](https://stekker.com/?utm_source=github&utm_medium=referral&utm_campaign=opensource). Our mobile app is
-designed to make smart charging effortless, eliminating the need for any configuration. Simply install the app, and it
-will handle the rest. Our app uses advanced algorithms to determine the best times to charge your vehicle, ensuring
-you'll use the most sustainable and cheapest energy available.
-
-![63d23f74d30e66e9c6fd9b1e_IMG_1742](https://user-images.githubusercontent.com/167882/216616346-ff619fe7-8d27-45b2-b420-725a9073d67b.jpeg)
-
-## Build your own with this gem
-
-We are proud to introduce this open source project, the Zaptec charger Ruby gem. As passionate ruby developers, we
-believe in giving back to the community and contributing to the growth of this amazing language. That's why we are
-making our Zaptec connection accessible to everyone through open source. Our goal is to make smart charging easier and
-more accessible, and we hope that by opening up our project, we can help others in the community achieve their own
-goals.
+Ruby gem for the [Zaptec](https://zaptec.com) EV charger API. Built and maintained by [Stekker](https://stekker.com).
 
 ## Installation
-
-Add this line to your application's Gemfile:
 
 ```ruby
 gem "stekker_zaptec"
 ```
 
-And then execute:
-
-    $ bundle install
-
-Or install it yourself as:
-
-    $ gem install stekker_zaptec
-
 ## Usage
 
-You can use this without Rails in the following way:
+```ruby
+client = Zaptec::Client.new(username: "you@example.com", password: "secret")
+```
 
-```
-$ bin/console
-```
+Token caching and encryption are supported via `token_cache:` and `encryptor:` options.
+
+### Chargers
 
 ```ruby
-client = Zaptec::Client.new
-client.authorize(username: "username@example.com", password: "password")
-# #<Zaptec::Credentials:0x000000011c35d708
+chargers = client.chargers
+charger = chargers.first
+charger.id              # => "de522271-91f5-..."
+charger.device_id       # => "ZAP049387"
+charger.installation_id # => "8a3b1c2d-..."
+```
 
-# Get a list of chargers
-client.chargers
-# => [#<Zaptec::Charger:0x000000011c47df20 @device_id="ZAP049387", @device_type=4, @id="de522271-91f5-45b8-916b-...", ...
+### Charger state
 
-# Get the state of a charger
-id = client.chargers.first.id
-device_type_apollo = 4
-client.state(id, device_type_apollo).online?
-# => true
+```ruby
+state = client.state(charger.id, charger.device_type)
+state.online?                   # => true
+state.charging?                 # => true
+state.disconnected?             # => false
+state.total_charge_power        # => 7.36 (kW)
+state.max_phases                # => 3
+state.total_charge_power_session # => 12.4 (kWh)
+state.meter_reading             # => #<Zaptec::MeterReading reading_kwh=1234.56>
+```
+
+### Charging commands
+
+```ruby
+client.pause_charging(charger.id)
+client.resume_charging(charger.id)
+client.deauthorize_and_stop(charger.id)
+```
+
+### Current control
+
+```ruby
+client.update_installation(installation_id,
+  AvailableCurrentPhase1: 16,
+  AvailableCurrentPhase2: 16,
+  AvailableCurrentPhase3: 16
+)
+
+client.update_charger(charger.id, MaxChargeCurrent: 10)
+```
+
+### Installations
+
+```ruby
+installation = client.get_installation(installation_id)
+installation.address      # => "Keizersgracht 100"
+installation.city         # => "Amsterdam"
+installation.country_code # => "NL"
+
+hierarchy = client.get_installation_hierarchy(installation_id)
+hierarchy.network_type # => "TN_3_Phase"
+hierarchy.circuits.each do |circuit|
+  circuit.max_current # => 25
+  circuit.chargers    # => [#<Zaptec::Charger ...>]
+end
+```
+
+### Access grant
+
+```ruby
+url = client.grant_access_url(
+  lookup_key: "user@example.com",
+  partner_name: "My App"
+)
 ```
 
 ## Contributing
