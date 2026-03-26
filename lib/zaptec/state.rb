@@ -11,6 +11,8 @@ module Zaptec
 
     def total_charge_power = @data.fetch(:TotalChargePower).to_f
 
+    def max_charge_current = @data.fetch(:ChargerMaxCurrent).to_f
+
     def max_phases = @data.fetch(:MaxPhases).to_i
 
     def total_charge_power_session = @data.fetch(:TotalChargePowerSession).to_f
