@@ -205,6 +205,7 @@ RSpec.describe Zaptec::Client do
       expect(state)
         .to have_attributes(
           total_charge_power: 2.83012,
+          max_charge_current: 10.0,
           max_phases: 3,
           total_charge_power_session: 1.42012,
           charging?: false,
