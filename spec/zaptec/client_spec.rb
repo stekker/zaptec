@@ -211,7 +211,27 @@ RSpec.describe Zaptec::Client do
           charging?: false,
           online?: true,
           disconnected?: true,
+          session_identifier: nil,
         )
+    end
+
+    it "includes a session identifier when present" do
+      WebMock::API
+        .stub_request(:get, "https://api.zaptec.com/api/chargers/123/state")
+        .to_return(
+          body: charger_state_example(
+            charger_operation_mode: :Connected_Charging,
+            session_identifier: "abc-123-def",
+          ).to_json,
+          headers: { "Content-Type": "application/json" },
+        )
+
+      token_cache = build_token_cache("T123")
+      client = Zaptec::Client.new(username: "zap", password: "tec", token_cache:)
+      device_type_apollo = 4
+      state = client.state("123", device_type_apollo)
+
+      expect(state.session_identifier).to eq "abc-123-def"
     end
 
     it "includes a meter reading" do
@@ -567,7 +587,7 @@ RSpec.describe Zaptec::Client do
     }
   end
 
-  def charger_state_example(charger_operation_mode: :Disconnected)
+  def charger_state_example(charger_operation_mode: :Disconnected, session_identifier: "")
     charger_operation_mode_id = Zaptec::Constants.charger_operation_mode_name_to_mode(charger_operation_mode)
 
     [
@@ -862,7 +882,7 @@ RSpec.describe Zaptec::Client do
         ChargerId: "93d603a7-ff53-4ed8-8dd6-f79c94819458",
         StateId: 721,
         Timestamp: "2022-10-07T18:53:13.037",
-        ValueAsString: "",
+        ValueAsString: session_identifier,
       },
       {
         ChargerId: "93d603a7-ff53-4ed8-8dd6-f79c94819458",

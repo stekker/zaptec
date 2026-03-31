@@ -23,6 +23,11 @@ module Zaptec
 
     def online? = @data.fetch(:IsOnline).to_i.positive?
 
+    def session_identifier
+      value = @data[:SessionIdentifier]
+      value.presence
+    end
+
     def meter_reading
       @meter_reading ||= MeterReading.parse(@data.fetch(:SignedMeterValue))
     end
