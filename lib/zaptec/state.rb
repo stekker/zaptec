@@ -28,6 +28,8 @@ module Zaptec
       value.presence
     end
 
+    def operation_mode = charger_operation_mode
+
     def meter_reading
       @meter_reading ||= MeterReading.parse(@data.fetch(:SignedMeterValue))
     end
