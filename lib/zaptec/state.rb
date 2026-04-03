@@ -2,6 +2,7 @@ module Zaptec
   class State
     CONNECTED_REQUESTING = "Connected_Requesting".freeze
     CONNECTED_CHARGING = "Connected_Charging".freeze
+    CONNECTED_FINISHED = "Connected_Finished".freeze
     DISCONNECTED = "Disconnected".freeze
     CHARGING_MODES = [CONNECTED_CHARGING, CONNECTED_REQUESTING].freeze
 
@@ -21,6 +22,8 @@ module Zaptec
 
     def disconnected? = charger_operation_mode == DISCONNECTED
 
+    def paused? = charger_operation_mode == CONNECTED_FINISHED && final_stop_active?
+
     def online? = @data.fetch(:IsOnline).to_i.positive?
 
     def session_identifier
@@ -35,6 +38,8 @@ module Zaptec
     end
 
     private
+
+    def final_stop_active? = @data.fetch(:FinalStopActive).to_i == 1
 
     def charger_operation_mode
       Constants.charger_operation_mode_to_name(@data.fetch(:ChargerOperationMode).to_i)

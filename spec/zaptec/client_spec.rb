@@ -256,6 +256,59 @@ RSpec.describe Zaptec::Client do
         )
     end
 
+    it "reports paused when Connected_Finished and FinalStopActive" do
+      WebMock::API
+        .stub_request(:get, "https://api.zaptec.com/api/chargers/123/state")
+        .to_return(
+          body: charger_state_example(
+            charger_operation_mode: :Connected_Finished,
+            final_stop_active: 1,
+          ).to_json,
+          headers: { "Content-Type": "application/json" },
+        )
+
+      token_cache = build_token_cache("T123")
+      client = Zaptec::Client.new(username: "zap", password: "tec", token_cache:)
+      state = client.state("123", 4)
+
+      expect(state).to be_paused
+      expect(state).not_to be_charging
+      expect(state).not_to be_disconnected
+    end
+
+    it "is not paused when Connected_Finished but FinalStopActive is 0" do
+      WebMock::API
+        .stub_request(:get, "https://api.zaptec.com/api/chargers/123/state")
+        .to_return(
+          body: charger_state_example(
+            charger_operation_mode: :Connected_Finished,
+            final_stop_active: 0,
+          ).to_json,
+          headers: { "Content-Type": "application/json" },
+        )
+
+      token_cache = build_token_cache("T123")
+      client = Zaptec::Client.new(username: "zap", password: "tec", token_cache:)
+      state = client.state("123", 4)
+
+      expect(state).not_to be_paused
+    end
+
+    it "is not paused when charging" do
+      WebMock::API
+        .stub_request(:get, "https://api.zaptec.com/api/chargers/123/state")
+        .to_return(
+          body: charger_state_example(charger_operation_mode: :Connected_Charging).to_json,
+          headers: { "Content-Type": "application/json" },
+        )
+
+      token_cache = build_token_cache("T123")
+      client = Zaptec::Client.new(username: "zap", password: "tec", token_cache:)
+      state = client.state("123", 4)
+
+      expect(state).not_to be_paused
+    end
+
     it "raises a Forbidden error when we have no access to the charger (anymore)" do
       WebMock::API
         .stub_request(:get, "https://api.zaptec.com/api/chargers/123/state")
@@ -587,7 +640,7 @@ RSpec.describe Zaptec::Client do
     }
   end
 
-  def charger_state_example(charger_operation_mode: :Disconnected, session_identifier: "")
+  def charger_state_example(charger_operation_mode: :Disconnected, session_identifier: "", final_stop_active: 0)
     charger_operation_mode_id = Zaptec::Constants.charger_operation_mode_name_to_mode(charger_operation_mode)
 
     [
@@ -876,7 +929,7 @@ RSpec.describe Zaptec::Client do
         ChargerId: "93d603a7-ff53-4ed8-8dd6-f79c94819458",
         StateId: 718,
         Timestamp: "2022-09-16T11:04:27.243",
-        ValueAsString: "0",
+        ValueAsString: final_stop_active.to_s,
       },
       {
         ChargerId: "93d603a7-ff53-4ed8-8dd6-f79c94819458",
