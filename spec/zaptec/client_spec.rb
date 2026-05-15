@@ -505,6 +505,46 @@ RSpec.describe Zaptec::Client do
           name: "Zaptec",
         )
     end
+
+    it "retries once after a 204 response" do
+      hierarchy_body = {
+        Id: "2bbec6f9-c3ce-4edf-a72f-b1b2a663c6ba",
+        Name: "Stekker test",
+        NetworkType: 4,
+        Circuits: [],
+      }.to_json
+
+      WebMock::API
+        .stub_request(:get, "https://api.zaptec.com/api/installation/I123/hierarchy")
+        .to_return(
+          { status: 204, body: "", headers: {} },
+          { status: 200, body: hierarchy_body, headers: { "Content-Type": "application/json" } },
+        )
+
+      token_cache = build_token_cache("T123")
+      client = Zaptec::Client.new(username: "zap", password: "tec", token_cache:)
+
+      allow(client).to receive(:sleep)
+
+      installation_hierarchy = client.get_installation_hierarchy("I123")
+
+      expect(installation_hierarchy.name).to eq("Stekker test")
+      expect(client).to have_received(:sleep).with(2)
+    end
+
+    it "raises RequestFailed after two consecutive 204 responses" do
+      WebMock::API
+        .stub_request(:get, "https://api.zaptec.com/api/installation/I123/hierarchy")
+        .to_return(status: 204, body: "", headers: {})
+
+      token_cache = build_token_cache("T123")
+      client = Zaptec::Client.new(username: "zap", password: "tec", token_cache:)
+
+      allow(client).to receive(:sleep)
+
+      expect { client.get_installation_hierarchy("I123") }
+        .to raise_error(Zaptec::Errors::RequestFailed, "Empty response for installation hierarchy")
+    end
   end
 
   describe "#get_installation" do
