@@ -73,8 +73,18 @@ module Zaptec
 
     # https://api.zaptec.com/help/index.html#/Installation/get_api_installation__id__hierarchy
     def get_installation_hierarchy(installation_id)
-      get("/api/installation/#{installation_id}/hierarchy")
-        .then { |response| InstallationHierarchy.new(response.body) }
+      response = get("/api/installation/#{installation_id}/hierarchy")
+
+      if response.status == 204
+        sleep 2
+        response = get("/api/installation/#{installation_id}/hierarchy")
+      end
+
+      if response.status == 204
+        raise Errors::RequestFailed.new("Empty response for installation hierarchy", response)
+      end
+
+      InstallationHierarchy.new(response.body)
     end
 
     # https://api.zaptec.com/help/index.html#/Charger/get_api_chargers__id__state
