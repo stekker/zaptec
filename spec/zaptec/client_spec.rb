@@ -651,6 +651,44 @@ RSpec.describe Zaptec::Client do
     end
   end
 
+  describe "#user_groups" do
+    it "returns the user groups accessible to the authenticated user" do
+      WebMock::API
+        .stub_request(:get, "https://api.zaptec.com/api/userGroups")
+        .with(headers: { "Authorization" => "Bearer T123" })
+        .to_return(
+          body: {
+            Data: [
+              { Id: "g1", Name: "Acme" },
+              { Id: "g2", Name: "Beta" },
+            ],
+          }.to_json,
+          headers: { "Content-Type": "application/json" },
+        )
+
+      token_cache = build_token_cache("T123")
+      client = Zaptec::Client.new(username: "zap", password: "tec", token_cache:)
+
+      expect(client.user_groups.map(&:id)).to eq %w[g1 g2]
+      expect(client.user_groups.map(&:name)).to eq %w[Acme Beta]
+    end
+
+    it "supports an unwrapped array response" do
+      WebMock::API
+        .stub_request(:get, "https://api.zaptec.com/api/userGroups")
+        .with(headers: { "Authorization" => "Bearer T123" })
+        .to_return(
+          body: [{ Id: "g1", Name: "Acme" }].to_json,
+          headers: { "Content-Type": "application/json" },
+        )
+
+      token_cache = build_token_cache("T123")
+      client = Zaptec::Client.new(username: "zap", password: "tec", token_cache:)
+
+      expect(client.user_groups.map(&:id)).to eq %w[g1]
+    end
+  end
+
   describe "#messaging_connection_details" do
     it "fetches Service Bus connection details for a user group" do
       WebMock::API

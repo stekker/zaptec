@@ -15,6 +15,7 @@ require "zaptec/messaging_subscription"
 require "zaptec/meter_reading"
 require "zaptec/null_encryptor"
 require "zaptec/state"
+require "zaptec/user_group"
 require "zaptec/version"
 
 module Zaptec
