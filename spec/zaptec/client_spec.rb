@@ -651,6 +651,39 @@ RSpec.describe Zaptec::Client do
     end
   end
 
+  describe "#messaging_connection_details" do
+    it "fetches Service Bus connection details for a user group" do
+      WebMock::API
+        .stub_request(:get, "https://api.zaptec.com/api/userGroups/g123/messagingConnectionDetails")
+        .with(headers: { "Authorization" => "Bearer T123" })
+        .to_return(
+          body: {
+            Type: 0,
+            Host: "sb.example.com",
+            Port: 5671,
+            UseSSL: true,
+            Username: "usergroup_g123",
+            Password: "secret",
+            Topic: "usergroup_g123",
+            Subscription: "default",
+          }.to_json,
+          headers: { "Content-Type": "application/json" },
+        )
+
+      token_cache = build_token_cache("T123")
+      client = Zaptec::Client.new(username: "zap", password: "tec", token_cache:)
+
+      expect(client.messaging_connection_details("g123"))
+        .to have_attributes(
+          host: "sb.example.com",
+          username: "usergroup_g123",
+          password: "secret",
+          topic: "usergroup_g123",
+          subscription: "default",
+        )
+    end
+  end
+
   private
 
   def chargers_example
