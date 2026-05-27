@@ -5,7 +5,7 @@ gemspec
 
 gem "byebug"
 gem "gem-release", "~> 2.2"
-gem "jwt", "~> 2.6"
+gem "jwt", "~> 3.2"
 gem "rake", "~> 13.0"
 gem "rspec", "~> 3.0"
 gem "rubocop", "~> 1.7"
