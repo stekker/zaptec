@@ -11,5 +11,11 @@ RSpec.describe Zaptec::State do
 
       expect(state).not_to be_final_stop_active
     end
+
+    it "is false when the FinalStopActive observation is missing from the API response" do
+      state = Zaptec::State.new({})
+
+      expect(state).not_to be_final_stop_active
+    end
   end
 end
