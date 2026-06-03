@@ -24,7 +24,7 @@ module Zaptec
 
     def paused? = charger_operation_mode == CONNECTED_FINISHED && final_stop_active?
 
-    def final_stop_active? = @data.fetch(:FinalStopActive).to_i == 1
+    def final_stop_active? = @data[:FinalStopActive].to_i == 1
 
     def online? = @data.fetch(:IsOnline).to_i.positive?
 
