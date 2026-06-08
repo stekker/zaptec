@@ -10,9 +10,12 @@ require "zaptec/credentials"
 require "zaptec/errors"
 require "zaptec/installation"
 require "zaptec/installation_hierarchy"
+require "zaptec/messaging_connection_details"
+require "zaptec/messaging_subscription"
 require "zaptec/meter_reading"
 require "zaptec/null_encryptor"
 require "zaptec/state"
+require "zaptec/user_group"
 require "zaptec/version"
 
 module Zaptec
