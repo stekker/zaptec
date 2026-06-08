@@ -33,7 +33,31 @@ RSpec.describe Zaptec::MessagingSubscription do
       state_name: :TotalChargePowerSession,
       timestamp: "2026-05-20T12:41:41.55472Z",
       value: "13.463",
+      lock_location: nil,
     )
+  end
+
+  it "captures the Location header as lock_location when peeking" do
+    body = <<~BODY
+      @string\x03http://schemas.microsoft.com/2003/10/Serialization/\xC3\xBE\xC3\xBF{"DeviceId":"ZAP018643","DeviceType":4,"StateId":553,"Timestamp":"2026-05-20T12:41:41.55472Z","ValueAsString":"13.463"}
+    BODY
+
+    WebMock::API
+      .stub_request(:post, "https://sb.example.com/usergroup_abc/subscriptions/default/messages/head")
+      .with(query: { timeout: "30" })
+      .to_return(
+        status: 201,
+        body:,
+        headers: {
+          "Content-Type" => "application/xml",
+          "Location" => "https://sb.example.com/usergroup_abc/subscriptions/default/messages/42/lock-token",
+        },
+      )
+
+    subscription = described_class.new(connection_details:)
+
+    expect(subscription.send(:fetch_one, mode: :peek, timeout: 30).lock_location)
+      .to eq("https://sb.example.com/usergroup_abc/subscriptions/default/messages/42/lock-token")
   end
 
   it "uses POST in peek mode and DELETE in consume mode" do
@@ -89,5 +113,54 @@ RSpec.describe Zaptec::MessagingSubscription do
     subscription = described_class.new(connection_details:)
 
     expect(subscription.send(:fetch_one, mode: :consume, timeout: 30)).to be_nil
+  end
+
+  describe "#complete" do
+    it "deletes the locked message at its lock_location" do
+      lock_url = "https://sb.example.com/usergroup_abc/subscriptions/default/messages/42/lock-token"
+      stub = WebMock::API
+        .stub_request(:delete, lock_url)
+        .with(headers: { "Authorization" => /SharedAccessSignature/ })
+        .to_return(status: 200)
+
+      subscription = described_class.new(connection_details:)
+      message = build_message(lock_location: lock_url)
+
+      subscription.complete(message)
+
+      expect(stub).to have_been_requested
+    end
+
+    it "raises ArgumentError when the message was not peek-locked" do
+      subscription = described_class.new(connection_details:)
+      message = build_message(lock_location: nil)
+
+      expect { subscription.complete(message) }.to raise_error(ArgumentError, /peek mode/)
+    end
+
+    it "raises RequestFailed when the broker rejects the completion" do
+      lock_url = "https://sb.example.com/usergroup_abc/subscriptions/default/messages/42/lock-token"
+      WebMock::API
+        .stub_request(:delete, lock_url)
+        .to_return(status: 410, body: "MessageLockLost")
+
+      subscription = described_class.new(connection_details:)
+      message = build_message(lock_location: lock_url)
+
+      expect { subscription.complete(message) }.to raise_error(Zaptec::Errors::RequestFailed, /410/)
+    end
+  end
+
+  def build_message(lock_location:)
+    Zaptec::MessagingSubscription::Message.new(
+      device_id: "ZAP018643",
+      device_type: 4,
+      state_id: 553,
+      state_name: :TotalChargePowerSession,
+      timestamp: "2026-05-20T12:41:41.55472Z",
+      value: "13.463",
+      raw: {},
+      lock_location:,
+    )
   end
 end

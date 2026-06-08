@@ -6,7 +6,20 @@ require "uri"
 
 module Zaptec
   class MessagingSubscription
-    Message = Data.define(:device_id, :device_type, :state_id, :state_name, :timestamp, :value, :raw)
+    Message = Data.define(
+      :device_id,
+      :device_type,
+      :state_id,
+      :state_name,
+      :timestamp,
+      :value,
+      :raw,
+      :lock_location,
+    ) do
+      def initialize(lock_location: nil, **)
+        super
+      end
+    end
 
     TOKEN_TTL = 1.hour
     TOKEN_REFRESH_MARGIN = 5.minutes
@@ -24,6 +37,13 @@ module Zaptec
       end
     end
 
+    def complete(message)
+      raise ArgumentError, "Message has no lock; was it received in peek mode?" if message.lock_location.nil?
+
+      response = http.request(lock_request(Net::HTTP::Delete, message.lock_location))
+      handle_lock_response(response)
+    end
+
     private
 
     attr_reader :connection_details
@@ -35,7 +55,7 @@ module Zaptec
       when Net::HTTPNoContent
         nil
       when Net::HTTPSuccess
-        parse_message(response.body.to_s)
+        parse_message(response.body.to_s, lock_location: response["Location"])
       when Net::HTTPUnauthorized
         invalidate_token!
         raise Errors::AuthorizationFailed
@@ -52,12 +72,32 @@ module Zaptec
       end
     end
 
+    def lock_request(klass, lock_location)
+      uri = URI(lock_location)
+      klass.new(uri.request_uri).tap do |req|
+        req["Authorization"] = sas_token
+        req["Content-Length"] = "0"
+      end
+    end
+
+    def handle_lock_response(response)
+      case response
+      when Net::HTTPSuccess
+        nil
+      when Net::HTTPUnauthorized
+        invalidate_token!
+        raise Errors::AuthorizationFailed
+      else
+        raise Errors::RequestFailed.new("#{response.code} #{response.message}: #{response.body}", response)
+      end
+    end
+
     def message_path(timeout)
       "/#{connection_details.topic}/subscriptions/#{connection_details.subscription}" \
         "/messages/head?timeout=#{timeout}"
     end
 
-    def parse_message(body)
+    def parse_message(body, lock_location:)
       start_index = body.index("{")
       end_index = body.rindex("}")
       return nil unless start_index && end_index && end_index > start_index
@@ -74,6 +114,7 @@ module Zaptec
         timestamp: raw["Timestamp"],
         value: raw["ValueAsString"],
         raw:,
+        lock_location:,
       )
     rescue JSON::ParserError
       nil
