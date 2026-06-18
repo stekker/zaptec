@@ -36,7 +36,10 @@ module Zaptec
     def operation_mode = charger_operation_mode
 
     def meter_reading
-      @meter_reading ||= MeterReading.parse(@data.fetch(:SignedMeterValue))
+      signed_meter_value = @data[:SignedMeterValue]
+      return if signed_meter_value.blank?
+
+      @meter_reading ||= MeterReading.parse(signed_meter_value)
     end
 
     private
