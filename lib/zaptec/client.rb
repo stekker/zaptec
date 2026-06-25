@@ -110,6 +110,19 @@ module Zaptec
       post("/api/chargers/#{charger_id}/update", body: attributes)
     end
 
+    def user_groups
+      response = get("/api/userGroups")
+      data = response.body
+      data = data.fetch("Data") if data.is_a?(Hash) && data.key?("Data")
+      data.map { |attrs| UserGroup.new(attrs) }
+    end
+
+    # https://docs.zaptec.com/docs/zaptec-service-bus-subscriptions
+    def messaging_connection_details(user_group_id)
+      get("/api/userGroups/#{user_group_id}/messagingConnectionDetails")
+        .then { |response| MessagingConnectionDetails.new(response.body) }
+    end
+
     def pause_charging(charger_id) = send_command(charger_id, :StopChargingFinal)
 
     def resume_charging(charger_id) = send_command(charger_id, :ResumeCharging)
