@@ -506,7 +506,7 @@ RSpec.describe Zaptec::Client do
         )
     end
 
-    it "retries once after a 204 response" do
+    it "retries with exponential backoff after 204 responses until one succeeds" do
       hierarchy_body = {
         Id: "2bbec6f9-c3ce-4edf-a72f-b1b2a663c6ba",
         Name: "Stekker test",
@@ -518,21 +518,23 @@ RSpec.describe Zaptec::Client do
         .stub_request(:get, "https://api.zaptec.com/api/installation/I123/hierarchy")
         .to_return(
           { status: 204, body: "", headers: {} },
+          { status: 204, body: "", headers: {} },
           { status: 200, body: hierarchy_body, headers: { "Content-Type": "application/json" } },
         )
 
       token_cache = build_token_cache("T123")
       client = Zaptec::Client.new(username: "zap", password: "tec", token_cache:)
 
-      allow(client).to receive(:sleep)
+      sleeps = []
+      allow(client).to receive(:sleep) { |duration| sleeps << duration }
 
       installation_hierarchy = client.get_installation_hierarchy("I123")
 
       expect(installation_hierarchy.name).to eq("Stekker test")
-      expect(client).to have_received(:sleep).with(2)
+      expect(sleeps).to eq([2, 2])
     end
 
-    it "raises RequestFailed after two consecutive 204 responses" do
+    it "keeps retrying until the cumulative wait reaches max_wait" do
       WebMock::API
         .stub_request(:get, "https://api.zaptec.com/api/installation/I123/hierarchy")
         .to_return(status: 204, body: "", headers: {})
@@ -540,10 +542,69 @@ RSpec.describe Zaptec::Client do
       token_cache = build_token_cache("T123")
       client = Zaptec::Client.new(username: "zap", password: "tec", token_cache:)
 
-      allow(client).to receive(:sleep)
+      sleeps = []
+      allow(client).to receive(:sleep) { |duration| sleeps << duration }
 
-      expect { client.get_installation_hierarchy("I123") }
+      expect { client.get_installation_hierarchy("I123", max_wait: 50) }
         .to raise_error(Zaptec::Errors::RequestFailed, "Empty response for installation hierarchy")
+
+      # Attempts happen at cumulative t = 0, 2, 4, 8, 16, 32, 50 seconds
+      expect(sleeps).to eq([2, 2, 4, 8, 16, 18])
+      expect(WebMock).to have_requested(:get, "https://api.zaptec.com/api/installation/I123/hierarchy").times(7)
+    end
+
+    it "caps the final sleep so the last attempt happens at exactly max_wait seconds" do
+      WebMock::API
+        .stub_request(:get, "https://api.zaptec.com/api/installation/I123/hierarchy")
+        .to_return(status: 204, body: "", headers: {})
+
+      token_cache = build_token_cache("T123")
+      client = Zaptec::Client.new(username: "zap", password: "tec", token_cache:)
+
+      sleeps = []
+      allow(client).to receive(:sleep) { |duration| sleeps << duration }
+
+      expect { client.get_installation_hierarchy("I123", max_wait: 5) }
+        .to raise_error(Zaptec::Errors::RequestFailed, "Empty response for installation hierarchy")
+
+      # Attempts at cumulative t = 0, 2, 4, 5
+      expect(sleeps).to eq([2, 2, 1])
+      expect(WebMock).to have_requested(:get, "https://api.zaptec.com/api/installation/I123/hierarchy").times(4)
+    end
+
+    it "accepts an ActiveSupport::Duration for max_wait" do
+      WebMock::API
+        .stub_request(:get, "https://api.zaptec.com/api/installation/I123/hierarchy")
+        .to_return(status: 204, body: "", headers: {})
+
+      token_cache = build_token_cache("T123")
+      client = Zaptec::Client.new(username: "zap", password: "tec", token_cache:)
+
+      sleeps = []
+      allow(client).to receive(:sleep) { |duration| sleeps << duration }
+
+      expect { client.get_installation_hierarchy("I123", max_wait: 5.seconds) }
+        .to raise_error(Zaptec::Errors::RequestFailed, "Empty response for installation hierarchy")
+
+      expect(sleeps).to eq([2, 2, 1])
+    end
+
+    it "makes a single attempt with no retries when max_wait is zero" do
+      WebMock::API
+        .stub_request(:get, "https://api.zaptec.com/api/installation/I123/hierarchy")
+        .to_return(status: 204, body: "", headers: {})
+
+      token_cache = build_token_cache("T123")
+      client = Zaptec::Client.new(username: "zap", password: "tec", token_cache:)
+
+      sleeps = []
+      allow(client).to receive(:sleep) { |duration| sleeps << duration }
+
+      expect { client.get_installation_hierarchy("I123", max_wait: 0) }
+        .to raise_error(Zaptec::Errors::RequestFailed, "Empty response for installation hierarchy")
+
+      expect(sleeps).to be_empty
+      expect(WebMock).to have_requested(:get, "https://api.zaptec.com/api/installation/I123/hierarchy").once
     end
   end
 
