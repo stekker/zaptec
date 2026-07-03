@@ -4,6 +4,7 @@ module Zaptec
     USER_ROLE = 1
     OWNER_ROLE = 2
     TOKENS_CACHE_KEY = "zaptec.auth.tokens".freeze
+    DEFAULT_HIERARCHY_RETRY_DELAYS = [2, 4].freeze
 
     attr_reader :credentials
 
@@ -72,11 +73,17 @@ module Zaptec
     end
 
     # https://api.zaptec.com/help/index.html#/Installation/get_api_installation__id__hierarchy
-    def get_installation_hierarchy(installation_id)
+    #
+    # Zaptec occasionally returns 204 while an installation is still being provisioned.
+    # `retry_delays` is the list of pauses (in seconds) between retries; its length
+    # determines the number of retries. `[]` means a single attempt, no retries.
+    def get_installation_hierarchy(installation_id, retry_delays: DEFAULT_HIERARCHY_RETRY_DELAYS)
       response = get("/api/installation/#{installation_id}/hierarchy")
 
-      if response.status == 204
-        sleep 2
+      retry_delays.each do |delay|
+        break unless response.status == 204
+
+        sleep delay
         response = get("/api/installation/#{installation_id}/hierarchy")
       end
 

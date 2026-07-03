@@ -506,7 +506,7 @@ RSpec.describe Zaptec::Client do
         )
     end
 
-    it "retries once after a 204 response" do
+    it "retries with the default backoff after 204 responses until one succeeds" do
       hierarchy_body = {
         Id: "2bbec6f9-c3ce-4edf-a72f-b1b2a663c6ba",
         Name: "Stekker test",
@@ -517,6 +517,7 @@ RSpec.describe Zaptec::Client do
       WebMock::API
         .stub_request(:get, "https://api.zaptec.com/api/installation/I123/hierarchy")
         .to_return(
+          { status: 204, body: "", headers: {} },
           { status: 204, body: "", headers: {} },
           { status: 200, body: hierarchy_body, headers: { "Content-Type": "application/json" } },
         )
@@ -529,10 +530,11 @@ RSpec.describe Zaptec::Client do
       installation_hierarchy = client.get_installation_hierarchy("I123")
 
       expect(installation_hierarchy.name).to eq("Stekker test")
-      expect(client).to have_received(:sleep).with(2)
+      expect(client).to have_received(:sleep).with(2).ordered
+      expect(client).to have_received(:sleep).with(4).ordered
     end
 
-    it "raises RequestFailed after two consecutive 204 responses" do
+    it "raises RequestFailed when every attempt returns 204 with the default retries" do
       WebMock::API
         .stub_request(:get, "https://api.zaptec.com/api/installation/I123/hierarchy")
         .to_return(status: 204, body: "", headers: {})
@@ -544,6 +546,47 @@ RSpec.describe Zaptec::Client do
 
       expect { client.get_installation_hierarchy("I123") }
         .to raise_error(Zaptec::Errors::RequestFailed, "Empty response for installation hierarchy")
+
+      expect(client).to have_received(:sleep).with(2).ordered
+      expect(client).to have_received(:sleep).with(4).ordered
+      expect(WebMock).to have_requested(:get, "https://api.zaptec.com/api/installation/I123/hierarchy").times(3)
+    end
+
+    it "honours a caller-supplied retry_delays list" do
+      WebMock::API
+        .stub_request(:get, "https://api.zaptec.com/api/installation/I123/hierarchy")
+        .to_return(status: 204, body: "", headers: {})
+
+      token_cache = build_token_cache("T123")
+      client = Zaptec::Client.new(username: "zap", password: "tec", token_cache:)
+
+      allow(client).to receive(:sleep)
+
+      expect { client.get_installation_hierarchy("I123", retry_delays: [1, 3, 5, 7]) }
+        .to raise_error(Zaptec::Errors::RequestFailed, "Empty response for installation hierarchy")
+
+      expect(client).to have_received(:sleep).with(1).ordered
+      expect(client).to have_received(:sleep).with(3).ordered
+      expect(client).to have_received(:sleep).with(5).ordered
+      expect(client).to have_received(:sleep).with(7).ordered
+      expect(WebMock).to have_requested(:get, "https://api.zaptec.com/api/installation/I123/hierarchy").times(5)
+    end
+
+    it "makes a single attempt with no retries when retry_delays is empty" do
+      WebMock::API
+        .stub_request(:get, "https://api.zaptec.com/api/installation/I123/hierarchy")
+        .to_return(status: 204, body: "", headers: {})
+
+      token_cache = build_token_cache("T123")
+      client = Zaptec::Client.new(username: "zap", password: "tec", token_cache:)
+
+      allow(client).to receive(:sleep)
+
+      expect { client.get_installation_hierarchy("I123", retry_delays: []) }
+        .to raise_error(Zaptec::Errors::RequestFailed, "Empty response for installation hierarchy")
+
+      expect(client).not_to have_received(:sleep)
+      expect(WebMock).to have_requested(:get, "https://api.zaptec.com/api/installation/I123/hierarchy").once
     end
   end
 
