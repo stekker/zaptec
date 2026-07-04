@@ -712,6 +712,77 @@ RSpec.describe Zaptec::Client do
     end
   end
 
+  describe "#user_groups" do
+    it "returns the user groups accessible to the authenticated user" do
+      WebMock::API
+        .stub_request(:get, "https://api.zaptec.com/api/userGroups")
+        .with(headers: { "Authorization" => "Bearer T123" })
+        .to_return(
+          body: {
+            Data: [
+              { Id: "g1", Name: "Acme" },
+              { Id: "g2", Name: "Beta" },
+            ],
+          }.to_json,
+          headers: { "Content-Type": "application/json" },
+        )
+
+      token_cache = build_token_cache("T123")
+      client = Zaptec::Client.new(username: "zap", password: "tec", token_cache:)
+
+      expect(client.user_groups.map(&:id)).to eq %w[g1 g2]
+      expect(client.user_groups.map(&:name)).to eq %w[Acme Beta]
+    end
+
+    it "supports an unwrapped array response" do
+      WebMock::API
+        .stub_request(:get, "https://api.zaptec.com/api/userGroups")
+        .with(headers: { "Authorization" => "Bearer T123" })
+        .to_return(
+          body: [{ Id: "g1", Name: "Acme" }].to_json,
+          headers: { "Content-Type": "application/json" },
+        )
+
+      token_cache = build_token_cache("T123")
+      client = Zaptec::Client.new(username: "zap", password: "tec", token_cache:)
+
+      expect(client.user_groups.map(&:id)).to eq %w[g1]
+    end
+  end
+
+  describe "#messaging_connection_details" do
+    it "fetches Service Bus connection details for a user group" do
+      WebMock::API
+        .stub_request(:get, "https://api.zaptec.com/api/userGroups/g123/messagingConnectionDetails")
+        .with(headers: { "Authorization" => "Bearer T123" })
+        .to_return(
+          body: {
+            Type: 0,
+            Host: "sb.example.com",
+            Port: 5671,
+            UseSSL: true,
+            Username: "usergroup_g123",
+            Password: "secret",
+            Topic: "usergroup_g123",
+            Subscription: "default",
+          }.to_json,
+          headers: { "Content-Type": "application/json" },
+        )
+
+      token_cache = build_token_cache("T123")
+      client = Zaptec::Client.new(username: "zap", password: "tec", token_cache:)
+
+      expect(client.messaging_connection_details("g123"))
+        .to have_attributes(
+          host: "sb.example.com",
+          username: "usergroup_g123",
+          password: "secret",
+          topic: "usergroup_g123",
+          subscription: "default",
+        )
+    end
+  end
+
   private
 
   def chargers_example
