@@ -187,6 +187,25 @@ RSpec.describe Zaptec::Client do
         )
     end
 
+    it "fetches a single charger by id" do
+      WebMock::API
+        .stub_request(:get, "https://api.zaptec.com/api/chargers/93d603a7-ff53-4ed8-8dd6-f79c94819458")
+        .to_return(
+          body: chargers_example[:Data].first.to_json,
+          headers: { "Content-Type": "application/json" },
+        )
+
+      token_cache = build_token_cache("T123")
+      client = Zaptec::Client.new(username: "zap", password: "tec", token_cache:)
+
+      expect(client.charger("93d603a7-ff53-4ed8-8dd6-f79c94819458"))
+        .to have_attributes(
+          id: "93d603a7-ff53-4ed8-8dd6-f79c94819458",
+          device_id: "ZAP049387",
+          device_type: 4,
+        )
+    end
+
     it "walks every page of the chargers listing" do
       first_page = chargers_example.merge(Pages: 2)
       second_charger = chargers_example[:Data].first.merge(

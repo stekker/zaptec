@@ -79,6 +79,12 @@ module Zaptec
       chargers
     end
 
+    # https://docs.zaptec.com/reference/api_chargers_id_get
+    def charger(charger_id)
+      get("/api/chargers/#{charger_id}")
+        .then { |response| Charger.new(response.body) }
+    end
+
     # https://api.zaptec.com/help/index.html#/Installation/get_api_installation__id_
     def get_installation(installation_id)
       get("/api/installation/#{installation_id}")
