@@ -3,6 +3,7 @@ module Zaptec
     BASE_URL = "https://api.zaptec.com".freeze
     USER_ROLE = 1
     OWNER_ROLE = 2
+    CHARGERS_PAGE_SIZE = 100
     TOKENS_CACHE_KEY = "zaptec.auth.tokens".freeze
     DEFAULT_HIERARCHY_MAX_WAIT = 30.seconds
 
@@ -60,10 +61,28 @@ module Zaptec
 
     # https://api.zaptec.com/help/index.html#/Charger/get_api_chargers
     def chargers
-      get("/api/chargers", { Roles: USER_ROLE | OWNER_ROLE })
-        .body
-        .fetch("Data")
-        .map { |data| Charger.new(data) }
+      page_index = 0
+      chargers = []
+
+      loop do
+        body = get(
+          "/api/chargers",
+          { Roles: USER_ROLE | OWNER_ROLE, PageIndex: page_index, PageSize: CHARGERS_PAGE_SIZE },
+        ).body
+
+        chargers.concat(body.fetch("Data").map { |data| Charger.new(data) })
+        page_index += 1
+
+        break if page_index >= body.fetch("Pages", 1)
+      end
+
+      chargers
+    end
+
+    # https://docs.zaptec.com/reference/api_chargers_id_get
+    def charger(charger_id)
+      get("/api/chargers/#{charger_id}")
+        .then { |response| Charger.new(response.body) }
     end
 
     # https://api.zaptec.com/help/index.html#/Installation/get_api_installation__id_

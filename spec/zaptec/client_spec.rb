@@ -19,7 +19,7 @@ RSpec.describe Zaptec::Client do
         )
 
       WebMock::API
-        .stub_request(:get, "https://api.zaptec.com/api/chargers?Roles=3")
+        .stub_request(:get, "https://api.zaptec.com/api/chargers?Roles=3&PageIndex=0&PageSize=100")
         .with(headers: { "Authorization" => "Bearer T123" })
         .to_return(
           body: { Data: [] }.to_json,
@@ -60,7 +60,7 @@ RSpec.describe Zaptec::Client do
         )
 
       WebMock::API
-        .stub_request(:get, "https://api.zaptec.com/api/chargers?Roles=3")
+        .stub_request(:get, "https://api.zaptec.com/api/chargers?Roles=3&PageIndex=0&PageSize=100")
         .with(headers: { "Authorization" => "Bearer T789" })
         .to_return(
           body: { Data: [] }.to_json,
@@ -98,7 +98,7 @@ RSpec.describe Zaptec::Client do
         )
 
       WebMock::API
-        .stub_request(:get, "https://api.zaptec.com/api/chargers?Roles=3")
+        .stub_request(:get, "https://api.zaptec.com/api/chargers?Roles=3&PageIndex=0&PageSize=100")
         .with(headers: { "Authorization" => "Bearer T123" })
         .to_return(
           body: { Data: [] }.to_json,
@@ -165,7 +165,7 @@ RSpec.describe Zaptec::Client do
   describe "#chargers" do
     it "gets the list of chargers" do
       WebMock::API
-        .stub_request(:get, "https://api.zaptec.com/api/chargers?Roles=3")
+        .stub_request(:get, "https://api.zaptec.com/api/chargers?Roles=3&PageIndex=0&PageSize=100")
         .to_return(
           body: chargers_example.to_json,
           headers: { "Content-Type": "application/json" },
@@ -185,6 +185,47 @@ RSpec.describe Zaptec::Client do
           installation_name: "Zaptechof 1",
           installation_id: "2bbec6f9-c3ce-4edf-a72f-b1b2a663c6ba",
         )
+    end
+
+    it "fetches a single charger by id" do
+      WebMock::API
+        .stub_request(:get, "https://api.zaptec.com/api/chargers/93d603a7-ff53-4ed8-8dd6-f79c94819458")
+        .to_return(
+          body: chargers_example[:Data].first.to_json,
+          headers: { "Content-Type": "application/json" },
+        )
+
+      token_cache = build_token_cache("T123")
+      client = Zaptec::Client.new(username: "zap", password: "tec", token_cache:)
+
+      expect(client.charger("93d603a7-ff53-4ed8-8dd6-f79c94819458"))
+        .to have_attributes(
+          id: "93d603a7-ff53-4ed8-8dd6-f79c94819458",
+          device_id: "ZAP049387",
+          device_type: 4,
+        )
+    end
+
+    it "walks every page of the chargers listing" do
+      first_page = chargers_example.merge(Pages: 2)
+      second_charger = chargers_example[:Data].first.merge(
+        Id: "aaa603a7-ff53-4ed8-8dd6-f79c94819458",
+        DeviceId: "GPN012345",
+        Name: "Zaptec 2",
+      )
+      second_page = { Pages: 2, Data: [second_charger] }
+
+      WebMock::API
+        .stub_request(:get, "https://api.zaptec.com/api/chargers?Roles=3&PageIndex=0&PageSize=100")
+        .to_return(body: first_page.to_json, headers: { "Content-Type": "application/json" })
+      WebMock::API
+        .stub_request(:get, "https://api.zaptec.com/api/chargers?Roles=3&PageIndex=1&PageSize=100")
+        .to_return(body: second_page.to_json, headers: { "Content-Type": "application/json" })
+
+      token_cache = build_token_cache("T123")
+      client = Zaptec::Client.new(username: "zap", password: "tec", token_cache:)
+
+      expect(client.chargers.map(&:device_id)).to eq %w[ZAP049387 GPN012345]
     end
   end
 
