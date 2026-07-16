@@ -30,11 +30,13 @@ RSpec.describe Zaptec::MeterReading do
         }|{"SD":"abc"}
       OCMF
 
-      expect(readings).to match([
-        have_attributes(timestamp: Time.zone.parse("2026-01-05T10:00:00Z"), reading_kwh: 100.0),
-        have_attributes(timestamp: Time.zone.parse("2026-01-05T11:00:00Z"), reading_kwh: 103.5),
-        have_attributes(timestamp: Time.zone.parse("2026-01-05T12:00:00Z"), reading_kwh: 110.2),
-      ])
+      expect(readings).to match(
+        [
+          have_attributes(timestamp: Time.zone.parse("2026-01-05T10:00:00Z"), reading_kwh: 100.0),
+          have_attributes(timestamp: Time.zone.parse("2026-01-05T11:00:00Z"), reading_kwh: 103.5),
+          have_attributes(timestamp: Time.zone.parse("2026-01-05T12:00:00Z"), reading_kwh: 110.2),
+        ],
+      )
     end
 
     it "converts Wh readings to kWh" do
