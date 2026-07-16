@@ -19,25 +19,32 @@ module Zaptec
 
     class << self
       def parse(ocmf_meter_reading)
-        _prefix, json_payload, _signature = ocmf_meter_reading.split("|")
+        parse_all(ocmf_meter_reading).first
+      end
 
+      def parse_all(ocmf_meter_reading)
+        return [] if ocmf_meter_reading.blank?
+
+        _prefix, json_payload, _signature = ocmf_meter_reading.split("|")
         data = JSON.parse(json_payload)
 
-        meter_reading = data.fetch(READINGS).detect do |reading|
-          reading.fetch(STATUS) == GOOD && reading[UNIT].in?([WH, KWH])
-        end
+        data.fetch(READINGS, [])
+          .select { |reading| reading[STATUS] == GOOD && reading[UNIT].in?([WH, KWH]) }
+          .map { |reading| build_reading(reading) }
+      end
 
-        return if meter_reading.blank?
+      private
 
-        timestamp = Time.zone.parse(meter_reading.fetch(TIMESTAMP).split.first)
+      def build_reading(reading)
+        timestamp = Time.zone.parse(reading.fetch(TIMESTAMP).split.first)
 
         kwh_magnitude =
-          case meter_reading.fetch(UNIT)
+          case reading.fetch(UNIT)
           when KWH then 1
           when WH then 1000.0
           end
 
-        reading_kwh = meter_reading.fetch(VALUE) / kwh_magnitude
+        reading_kwh = reading.fetch(VALUE) / kwh_magnitude
 
         new(reading_kwh:, timestamp:)
       end

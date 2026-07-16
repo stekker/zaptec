@@ -142,6 +142,36 @@ RSpec.describe Zaptec::ArchivedSession do
     end
   end
 
+  describe "#meter_readings" do
+    it "parses the OCMF sessionSignature into cumulative meter readings" do
+      session = described_class.new(
+        "id" => "b1e5a5f0-1111-4c8b-9d2f-000000000001",
+        "startDateTime" => "2026-01-05T10:00:00Z",
+        "sessionSignature" =>
+          'OCMF|{"FV":"1.0","RD":[' \
+          '{"TM":"2026-01-05T10:00:00,000+00:00 R","TX":"B","RV":100.0,"RU":"kWh","ST":"G"},' \
+          '{"TM":"2026-01-05T11:00:00,000+00:00 R","TX":"T","RV":103.5,"RU":"kWh","ST":"G"},' \
+          '{"TM":"2026-01-05T12:00:00,000+00:00 R","TX":"E","RV":110.2,"RU":"kWh","ST":"G"}' \
+          ']}|{"SD":"abc"}',
+      )
+
+      expect(session.meter_readings).to match([
+        have_attributes(timestamp: Time.zone.parse("2026-01-05T10:00:00Z"), reading_kwh: 100.0),
+        have_attributes(timestamp: Time.zone.parse("2026-01-05T11:00:00Z"), reading_kwh: 103.5),
+        have_attributes(timestamp: Time.zone.parse("2026-01-05T12:00:00Z"), reading_kwh: 110.2),
+      ])
+    end
+
+    it "returns an empty array when no sessionSignature is available" do
+      session = described_class.new(
+        "id" => "b1e5a5f0-1111-4c8b-9d2f-000000000001",
+        "startDateTime" => "2026-01-05T10:00:00Z",
+      )
+
+      expect(session.meter_readings).to eq []
+    end
+  end
+
   describe "#energy_details" do
     it "parses the per-timestamp energy readings when present" do
       session = described_class.new(

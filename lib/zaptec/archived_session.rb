@@ -39,6 +39,10 @@ module Zaptec
       @energy_details ||= (@data[:energyDetails] || []).map { |point| ArchivedSessionEnergyPoint.new(point) }
     end
 
+    def meter_readings
+      @meter_readings ||= MeterReading.parse_all(session_signature)
+    end
+
     private
 
     def parse_time(key)
