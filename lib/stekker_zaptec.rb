@@ -16,6 +16,7 @@ require "zaptec/installation"
 require "zaptec/installation_hierarchy"
 require "zaptec/meter_reading"
 require "zaptec/null_encryptor"
+require "zaptec/session"
 require "zaptec/state"
 require "zaptec/version"
 
