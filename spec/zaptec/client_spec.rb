@@ -753,6 +753,193 @@ RSpec.describe Zaptec::Client do
     end
   end
 
+  describe "#archived_sessions" do
+    it "fetches a page of archived sessions for an installation" do
+      from = Time.zone.parse("2026-01-01T00:00:00Z")
+      to = Time.zone.parse("2026-02-01T00:00:00Z")
+
+      WebMock::API
+        .stub_request(:get, "https://api.zaptec.com/api/sessions/archived")
+        .with(
+          query: {
+            From: "2026-01-01T00:00:00Z",
+            To: "2026-02-01T00:00:00Z",
+            InstallationId: "I123",
+          },
+        )
+        .to_return(
+          body: {
+            sessions: [
+              archived_session_example(id: "s0000000-0000-0000-0000-000000000001", energy: 1.23),
+              archived_session_example(id: "s0000000-0000-0000-0000-000000000002", energy: 4.56),
+            ],
+            cursor: nil,
+            hasMore: false,
+          }.to_json,
+          headers: { "Content-Type": "application/json" },
+        )
+
+      token_cache = build_token_cache("T123")
+      client = Zaptec::Client.new(username: "zap", password: "tec", token_cache:)
+
+      page = client.archived_sessions(from:, to:, installation_id: "I123")
+
+      expect(page).to be_a(Zaptec::ArchivedSessionsPage)
+      expect(page.sessions.map(&:id)).to eq %w[
+        s0000000-0000-0000-0000-000000000001
+        s0000000-0000-0000-0000-000000000002
+      ]
+      expect(page.sessions.map(&:energy_kwh)).to eq [1.23, 4.56]
+      expect(page.cursor).to be_nil
+      expect(page).not_to have_more
+    end
+
+    it "fetches archived sessions for a single charger" do
+      from = Time.zone.parse("2026-01-01T00:00:00Z")
+      to = Time.zone.parse("2026-02-01T00:00:00Z")
+
+      WebMock::API
+        .stub_request(:get, "https://api.zaptec.com/api/sessions/archived")
+        .with(
+          query: {
+            From: "2026-01-01T00:00:00Z",
+            To: "2026-02-01T00:00:00Z",
+            ChargerId: "C123",
+          },
+        )
+        .to_return(
+          body: { sessions: [], cursor: nil, hasMore: false }.to_json,
+          headers: { "Content-Type": "application/json" },
+        )
+
+      token_cache = build_token_cache("T123")
+      client = Zaptec::Client.new(username: "zap", password: "tec", token_cache:)
+
+      page = client.archived_sessions(from:, to:, charger_id: "C123")
+
+      expect(page.sessions).to eq []
+    end
+
+    it "carries the cursor and hasMore flag when more pages are available" do
+      from = Time.zone.parse("2026-01-01T00:00:00Z")
+      to = Time.zone.parse("2026-02-01T00:00:00Z")
+
+      WebMock::API
+        .stub_request(:get, "https://api.zaptec.com/api/sessions/archived")
+        .with(query: hash_including(Cursor: "opaque-cursor-123"))
+        .to_return(
+          body: {
+            sessions: [archived_session_example(id: "s0000000-0000-0000-0000-000000000010")],
+            cursor: "next-cursor-456",
+            hasMore: true,
+          }.to_json,
+          headers: { "Content-Type": "application/json" },
+        )
+
+      token_cache = build_token_cache("T123")
+      client = Zaptec::Client.new(username: "zap", password: "tec", token_cache:)
+
+      page = client.archived_sessions(
+        from:,
+        to:,
+        installation_id: "I123",
+        cursor: "opaque-cursor-123",
+      )
+
+      expect(page.cursor).to eq "next-cursor-456"
+      expect(page).to have_more
+    end
+
+    it "passes a custom page_size to the API" do
+      from = Time.zone.parse("2026-01-01T00:00:00Z")
+      to = Time.zone.parse("2026-02-01T00:00:00Z")
+
+      stub = WebMock::API
+        .stub_request(:get, "https://api.zaptec.com/api/sessions/archived")
+        .with(query: hash_including(PageSize: "200"))
+        .to_return(
+          body: { sessions: [], cursor: nil, hasMore: false }.to_json,
+          headers: { "Content-Type": "application/json" },
+        )
+
+      token_cache = build_token_cache("T123")
+      client = Zaptec::Client.new(username: "zap", password: "tec", token_cache:)
+
+      client.archived_sessions(from:, to:, installation_id: "I123", page_size: 200)
+
+      expect(stub).to have_been_requested
+    end
+
+    it "raises ParameterMissing when neither installation_id nor charger_id is given" do
+      token_cache = build_token_cache("T123")
+      client = Zaptec::Client.new(username: "zap", password: "tec", token_cache:)
+
+      expect do
+        client.archived_sessions(
+          from: Time.zone.parse("2026-01-01T00:00:00Z"),
+          to: Time.zone.parse("2026-02-01T00:00:00Z"),
+        )
+      end.to raise_error(Zaptec::Errors::ParameterMissing)
+    end
+
+    it "raises ParameterMissing when both installation_id and charger_id are given" do
+      token_cache = build_token_cache("T123")
+      client = Zaptec::Client.new(username: "zap", password: "tec", token_cache:)
+
+      expect do
+        client.archived_sessions(
+          from: Time.zone.parse("2026-01-01T00:00:00Z"),
+          to: Time.zone.parse("2026-02-01T00:00:00Z"),
+          installation_id: "I123",
+          charger_id: "C123",
+        )
+      end.to raise_error(Zaptec::Errors::ParameterMissing)
+    end
+
+    it "parses per-session energy details and the authorized user" do
+      WebMock::API
+        .stub_request(:get, "https://api.zaptec.com/api/sessions/archived")
+        .with(query: hash_including({}))
+        .to_return(
+          body: {
+            sessions: [
+              archived_session_example(
+                id: "s0000000-0000-0000-0000-000000000001",
+                energy: 7.5,
+                extra: {
+                  authorizedUser: {
+                    id: "u0000000-0000-0000-0000-000000000001",
+                    email: "driver@example.com",
+                    fullName: "Anne Driver",
+                  },
+                  energyDetails: [
+                    { timestamp: "2026-01-05T10:15:00Z", energy: 2.5 },
+                    { timestamp: "2026-01-05T10:30:00Z", energy: 5.0 },
+                  ],
+                },
+              ),
+            ],
+            cursor: nil,
+            hasMore: false,
+          }.to_json,
+          headers: { "Content-Type": "application/json" },
+        )
+
+      token_cache = build_token_cache("T123")
+      client = Zaptec::Client.new(username: "zap", password: "tec", token_cache:)
+
+      page = client.archived_sessions(
+        from: Time.zone.parse("2026-01-01T00:00:00Z"),
+        to: Time.zone.parse("2026-02-01T00:00:00Z"),
+        installation_id: "I123",
+      )
+
+      session = page.sessions.first
+      expect(session.authorized_user.email).to eq "driver@example.com"
+      expect(session.energy_details.map(&:energy_kwh)).to eq [2.5, 5.0]
+    end
+  end
+
   private
 
   def chargers_example
@@ -1335,6 +1522,27 @@ RSpec.describe Zaptec::Client do
       installation_name: "Zaptechof 1",
       installation_id: "2bbec6f9-c3ce-4edf-a72f-b1b2a663c6ba",
     )
+  end
+
+  def archived_session_example(id:, energy: 0.0, extra: {})
+    {
+      id:,
+      chargerId: "c0000000-0000-0000-0000-000000000001",
+      deviceId: "ZAP123456",
+      deviceName: "Zaptec-1",
+      startDateTime: "2026-01-05T10:00:00Z",
+      endDateTime: "2026-01-05T11:00:00Z",
+      recognizedDateTime: "2026-01-05T11:00:05Z",
+      offline: false,
+      reliableClock: true,
+      stoppedByRfid: false,
+      signed: false,
+      voided: false,
+      aborted: false,
+      ocppNative: false,
+      externallyAbandoned: false,
+      energy:,
+    }.merge(extra)
   end
 
   def build_token_cache(access_token, expires_at: 1.hour.from_now)

@@ -140,6 +140,27 @@ module Zaptec
       post("/api/chargers/#{charger_id}/update", body: attributes)
     end
 
+    # https://api.zaptec.com/help/index.html#/Session/api_sessions_archived_get
+    def archived_sessions(from:, to:, installation_id: nil, charger_id: nil, page_size: nil, cursor: nil)
+      if installation_id.blank? == charger_id.blank?
+        raise Errors::ParameterMissing, "Provide exactly one of installation_id or charger_id"
+      end
+
+      params = { From: from.iso8601, To: to.iso8601 }
+      params[:InstallationId] = installation_id if installation_id.present?
+      params[:ChargerId] = charger_id if charger_id.present?
+      params[:PageSize] = page_size if page_size.present?
+      params[:Cursor] = cursor if cursor.present?
+
+      body = get("/api/sessions/archived", params).body
+
+      ArchivedSessionsPage.new(
+        sessions: (body["sessions"] || []).map { |data| ArchivedSession.new(data) },
+        cursor: body["cursor"],
+        has_more: body.fetch("hasMore", false),
+      )
+    end
+
     def pause_charging(charger_id) = send_command(charger_id, :StopChargingFinal)
 
     def resume_charging(charger_id) = send_command(charger_id, :ResumeCharging)
