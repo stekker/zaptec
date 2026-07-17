@@ -140,6 +140,12 @@ module Zaptec
       post("/api/chargers/#{charger_id}/update", body: attributes)
     end
 
+    # https://docs.zaptec.com/reference/api_session_id_get
+    def session(id)
+      get("/api/session/#{id}")
+        .then { |response| Session.new(response.body) }
+    end
+
     # https://api.zaptec.com/help/index.html#/Session/api_sessions_archived_get
     def archived_sessions(from:, to:, installation_id: nil, charger_id: nil, page_size: nil, cursor: nil)
       if installation_id.blank? == charger_id.blank?

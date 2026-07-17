@@ -940,6 +940,59 @@ RSpec.describe Zaptec::Client do
     end
   end
 
+  describe "#session" do
+    it "fetches details for a single session by id" do
+      WebMock::API
+        .stub_request(:get, "https://api.zaptec.com/api/session/b1e5a5f0-1111-4c8b-9d2f-000000000001")
+        .to_return(
+          body: {
+            sessionId: "b1e5a5f0-1111-4c8b-9d2f-000000000001",
+            sessionStart: "2026-01-05T10:00:00Z",
+            sessionEnd: "2026-01-05T11:30:00Z",
+            energy: 12.34,
+            signedSession: "OCMF-signature-blob",
+          }.to_json,
+          headers: { "Content-Type": "application/json" },
+        )
+
+      token_cache = build_token_cache("T123")
+      client = Zaptec::Client.new(username: "zap", password: "tec", token_cache:)
+
+      session = client.session("b1e5a5f0-1111-4c8b-9d2f-000000000001")
+
+      expect(session).to be_a(Zaptec::Session)
+      expect(session).to have_attributes(
+        id: "b1e5a5f0-1111-4c8b-9d2f-000000000001",
+        session_start: Time.zone.parse("2026-01-05T10:00:00Z"),
+        session_end: Time.zone.parse("2026-01-05T11:30:00Z"),
+        energy_kwh: 12.34,
+      )
+    end
+
+    it "leaves session_end nil while the session is still ongoing" do
+      WebMock::API
+        .stub_request(:get, "https://api.zaptec.com/api/session/b1e5a5f0-1111-4c8b-9d2f-000000000002")
+        .to_return(
+          body: {
+            sessionId: "b1e5a5f0-1111-4c8b-9d2f-000000000002",
+            sessionStart: "2026-01-05T10:00:00Z",
+            sessionEnd: nil,
+            energy: 0.0,
+            signedSession: nil,
+          }.to_json,
+          headers: { "Content-Type": "application/json" },
+        )
+
+      token_cache = build_token_cache("T123")
+      client = Zaptec::Client.new(username: "zap", password: "tec", token_cache:)
+
+      session = client.session("b1e5a5f0-1111-4c8b-9d2f-000000000002")
+
+      expect(session.session_start).to eq Time.zone.parse("2026-01-05T10:00:00Z")
+      expect(session.session_end).to be_nil
+    end
+  end
+
   private
 
   def chargers_example
