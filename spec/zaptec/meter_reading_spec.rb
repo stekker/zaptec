@@ -15,6 +15,12 @@ RSpec.describe Zaptec::MeterReading do
 
       expect(meter_reading).to have_attributes(reading_kwh: 2935.6)
     end
+
+    it "supports reading values serialized as JSON strings" do
+      meter_reading = Zaptec::MeterReading.parse(example_meter_reading(value: '"2935.6"'))
+
+      expect(meter_reading).to have_attributes(reading_kwh: 2935.6)
+    end
   end
 
   describe "::parse_all" do
