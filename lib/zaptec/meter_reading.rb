@@ -44,7 +44,7 @@ module Zaptec
           when WH then 1000.0
           end
 
-        reading_kwh = reading.fetch(VALUE) / kwh_magnitude
+        reading_kwh = Float(reading.fetch(VALUE)) / kwh_magnitude
 
         new(reading_kwh:, timestamp:)
       end
