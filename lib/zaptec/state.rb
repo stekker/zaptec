@@ -26,7 +26,7 @@ module Zaptec
 
     def final_stop_active? = @data[:FinalStopActive].to_i == 1
 
-    def online? = @data.fetch(:IsOnline).to_i.positive?
+    def online? = @data[:IsOnline].to_i.positive?
 
     def session_identifier
       value = @data[:SessionIdentifier]
