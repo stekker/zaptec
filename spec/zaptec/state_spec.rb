@@ -19,6 +19,26 @@ RSpec.describe Zaptec::State do
     end
   end
 
+  describe "#online?" do
+    it "is true when IsOnline is 1" do
+      state = Zaptec::State.new(IsOnline: "1")
+
+      expect(state).to be_online
+    end
+
+    it "is false when IsOnline is 0" do
+      state = Zaptec::State.new(IsOnline: "0")
+
+      expect(state).not_to be_online
+    end
+
+    it "is false when the IsOnline observation is missing from the API response" do
+      state = Zaptec::State.new({})
+
+      expect(state).not_to be_online
+    end
+  end
+
   describe "#meter_reading" do
     it "parses the signed meter value when present" do
       state = Zaptec::State.new(SignedMeterValue: example_meter_reading)
