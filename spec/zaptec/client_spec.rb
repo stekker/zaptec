@@ -647,6 +647,20 @@ RSpec.describe Zaptec::Client do
       expect(sleeps).to be_empty
       expect(WebMock).to have_requested(:get, "https://api.zaptec.com/api/installation/I123/hierarchy").once
     end
+
+    it "carries the response as a hash so callers can dig the status" do
+      WebMock::API
+        .stub_request(:get, "https://api.zaptec.com/api/installation/I123/hierarchy")
+        .to_return(status: 204, body: "", headers: {})
+
+      token_cache = build_token_cache("T123")
+      client = Zaptec::Client.new(username: "zap", password: "tec", token_cache:)
+
+      expect { client.get_installation_hierarchy("I123", max_wait: 0) }
+        .to raise_error(Zaptec::Errors::RequestFailed) do |error|
+          expect(error.response[:status]).to eq(204)
+        end
+    end
   end
 
   describe "#get_installation" do

@@ -111,7 +111,10 @@ module Zaptec
       end
 
       if response.status == 204
-        raise Errors::RequestFailed.new("Empty response for installation hierarchy", response)
+        raise Errors::RequestFailed.new(
+          "Empty response for installation hierarchy",
+          { status: response.status, headers: response.headers, body: response.body },
+        )
       end
 
       InstallationHierarchy.new(response.body)
