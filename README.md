@@ -29,7 +29,7 @@ charger.installation_id # => "8a3b1c2d-..."
 ### Charger state
 
 ```ruby
-state = client.state(charger.id, charger.device_type)
+state = client.state(charger.id)
 state.online?                   # => true
 state.charging?                 # => true
 state.disconnected?             # => false

@@ -240,8 +240,7 @@ RSpec.describe Zaptec::Client do
 
       token_cache = build_token_cache("T123")
       client = Zaptec::Client.new(username: "zap", password: "tec", token_cache:)
-      device_type_apollo = 4
-      state = client.state("123", device_type_apollo)
+      state = client.state("123")
 
       expect(state)
         .to have_attributes(
@@ -269,8 +268,7 @@ RSpec.describe Zaptec::Client do
 
       token_cache = build_token_cache("T123")
       client = Zaptec::Client.new(username: "zap", password: "tec", token_cache:)
-      device_type_apollo = 4
-      state = client.state("123", device_type_apollo)
+      state = client.state("123")
 
       expect(state.session_identifier).to eq "abc-123-def"
     end
@@ -287,8 +285,7 @@ RSpec.describe Zaptec::Client do
 
       token_cache = build_token_cache("T123")
       client = Zaptec::Client.new(username: "zap", password: "tec", token_cache:)
-      device_type_apollo = 4
-      state = client.state("123", device_type_apollo)
+      state = client.state("123")
 
       expect(state.meter_reading)
         .to have_attributes(
@@ -310,7 +307,7 @@ RSpec.describe Zaptec::Client do
 
       token_cache = build_token_cache("T123")
       client = Zaptec::Client.new(username: "zap", password: "tec", token_cache:)
-      state = client.state("123", 4)
+      state = client.state("123")
 
       expect(state).to be_paused
       expect(state).not_to be_charging
@@ -330,7 +327,7 @@ RSpec.describe Zaptec::Client do
 
       token_cache = build_token_cache("T123")
       client = Zaptec::Client.new(username: "zap", password: "tec", token_cache:)
-      state = client.state("123", 4)
+      state = client.state("123")
 
       expect(state).not_to be_paused
     end
@@ -345,7 +342,7 @@ RSpec.describe Zaptec::Client do
 
       token_cache = build_token_cache("T123")
       client = Zaptec::Client.new(username: "zap", password: "tec", token_cache:)
-      state = client.state("123", 4)
+      state = client.state("123")
 
       expect(state).not_to be_paused
     end
@@ -359,9 +356,8 @@ RSpec.describe Zaptec::Client do
 
       token_cache = build_token_cache("T123")
       client = Zaptec::Client.new(username: "zap", password: "tec", token_cache:)
-      device_type_apollo = 4
 
-      expect { client.state("123", device_type_apollo) }.to raise_error(Zaptec::Errors::Forbidden)
+      expect { client.state("123") }.to raise_error(Zaptec::Errors::Forbidden)
     end
   end
 
@@ -382,9 +378,8 @@ RSpec.describe Zaptec::Client do
 
     token_cache = build_token_cache("T123")
     client = Zaptec::Client.new(username: "zap", password: "tec", token_cache:)
-    device_type_apollo = 4
 
-    expect { client.state("123", device_type_apollo) }.not_to raise_error
+    expect { client.state("123") }.not_to raise_error
   end
 
   {
