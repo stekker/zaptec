@@ -1,11 +1,10 @@
 module Zaptec
   class Constants
     class << self
-      def observation_state_id_to_name(state_id:, device_type:)
-        device_type_observation_ids(device_type)
-          .fetch(state_id)
+      def observation_state_id_to_name(state_id:)
+        observation_ids.fetch(state_id)
       rescue KeyError
-        "Unknown state id '#{state_id}' (device type '#{device_type}')"
+        "Unknown state id '#{state_id}'"
       end
 
       def charger_operation_mode_to_name(operation_mode)
@@ -46,30 +45,8 @@ module Zaptec
 
       private
 
-      def device_type_observation_ids(device_type)
-        @device_type_observation_ids ||= {}
-
-        @device_type_observation_ids[device_type] ||=
-          begin
-            global_observation_ids = constants.fetch("Observations").invert.transform_values(&:to_sym)
-
-            device_specific_observations =
-              constants
-                .fetch("Schema")
-                .fetch(device_type_to_name(device_type))
-                .fetch("ObservationIds")
-                .invert
-                .transform_values(&:to_sym)
-
-            global_observation_ids.merge(device_specific_observations)
-          end
-      end
-
-      def device_type_to_name(device_type)
-        constants
-          .fetch("DeviceTypes")
-          .detect { |_name, type| type == device_type }
-          .then { |name, _type| name }
+      def observation_ids
+        @observation_ids ||= constants.fetch("Observations").invert.transform_values(&:to_sym)
       end
 
       def constants

@@ -121,12 +121,12 @@ module Zaptec
     end
 
     # https://api.zaptec.com/help/index.html#/Charger/get_api_chargers__id__state
-    def state(charger_id, device_type)
+    def state(charger_id)
       get("/api/chargers/#{charger_id}/state")
         .body
         .to_h do |state|
           [
-            Constants.observation_state_id_to_name(state_id: state.fetch("StateId"), device_type:),
+            Constants.observation_state_id_to_name(state_id: state.fetch("StateId")),
             state.fetch("ValueAsString", nil),
           ]
         end
