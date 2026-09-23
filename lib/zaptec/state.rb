@@ -10,13 +10,13 @@ module Zaptec
       @data = data
     end
 
-    def total_charge_power = @data.fetch(:TotalChargePower).to_f
+    def total_charge_power = @data[:TotalChargePower]&.to_f
 
-    def max_charge_current = @data.fetch(:ChargerMaxCurrent).to_f
+    def max_charge_current = @data[:ChargerMaxCurrent]&.to_f
 
-    def max_phases = @data.fetch(:MaxPhases).to_i
+    def max_phases = @data[:MaxPhases]&.to_i
 
-    def total_charge_power_session = @data.fetch(:TotalChargePowerSession).to_f
+    def total_charge_power_session = @data[:TotalChargePowerSession]&.to_f
 
     def charging? = charger_operation_mode.in?(CHARGING_MODES)
 
@@ -45,7 +45,7 @@ module Zaptec
     private
 
     def charger_operation_mode
-      Constants.charger_operation_mode_to_name(@data.fetch(:ChargerOperationMode).to_i)
+      Constants.charger_operation_mode_to_name(@data[:ChargerOperationMode].to_i)
     end
   end
 end
