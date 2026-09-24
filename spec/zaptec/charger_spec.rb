@@ -62,6 +62,20 @@ RSpec.describe Zaptec::Charger do
     end
   end
 
+  describe "#active?" do
+    it "is true when Zaptec reports the charger as active" do
+      expect(build_charger(Active: true)).to be_active
+    end
+
+    it "is false when Zaptec deactivated the charger" do
+      expect(build_charger(Active: false)).not_to be_active
+    end
+
+    it "is false when the field is absent, so an unknown charger is never offered as usable" do
+      expect(build_charger).not_to be_active
+    end
+  end
+
   def build_charger(**overrides)
     Zaptec::Charger.new(
       {
