@@ -26,6 +26,8 @@ module Zaptec
     def installation_name = @data.fetch(:InstallationName)
     def installation_id = @data.fetch(:InstallationId)
 
+    def active? = @data.fetch(:Active, false)
+
     def current_user_roles = @data.fetch(:CurrentUserRoles, NONE_ROLE)
 
     def user? = role?(USER_ROLE)
