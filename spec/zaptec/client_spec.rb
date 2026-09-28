@@ -117,6 +117,24 @@ RSpec.describe Zaptec::Client do
     end
   end
 
+  describe "#grant_access_url" do
+    it "asks Zaptec to list installations that already share access with us" do
+      client = Zaptec::Client.new(username: "zap", password: "tec")
+
+      url = client.grant_access_url(
+        lookup_key: "BSJG",
+        partner_name: "Stekker",
+        redirect_url: "https://stekker.app/access-result",
+        language: "nl",
+      )
+
+      expect(url).to eq(
+        "https://portal.zaptec.com/access/request/BSJG" \
+        "?partnerName=Stekker&returnUrl=https%3A%2F%2Fstekker.app%2Faccess-result&lang=nl&showExisting=true",
+      )
+    end
+  end
+
   describe "#authorize" do
     it "receives a token upon authorization" do
       WebMock::API

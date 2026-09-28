@@ -29,7 +29,12 @@ module Zaptec
 
     # https://docs.zaptec.com/docs/step-by-step-flow-granting-third-party-access-to-user-installations-via-lookup-key
     def grant_access_url(lookup_key:, partner_name:, redirect_url: nil, language: "en")
-      query = URI.encode_www_form(partnerName: partner_name, returnUrl: redirect_url, lang: language)
+      query = URI.encode_www_form(
+        partnerName: partner_name,
+        returnUrl: redirect_url,
+        lang: language,
+        showExisting: true,
+      )
       "https://portal.zaptec.com/access/request/#{lookup_key}?#{query}"
     end
 
